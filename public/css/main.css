@@ -1,0 +1,72 @@
+:root {
+    --red: #E53935;
+    --white: #FFFFFF;
+    --black: #000000;
+    --orange_accent: #FF9800;
+    --grey_accent: #424242;
+}
+
+body {
+    background-color: whitesmoke;
+    display: flex;
+    justify-content: center;
+}
+
+#page {
+    width: 90vw;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    text-align: center;
+    background-color: var(--grey_accent);
+    color: var(--white);
+}
+
+nav {
+    display: flex;
+    width: 100%;
+    background-color: var(--grey_accent);
+    justify-content: space-between;
+}
+
+nav ul {
+    display: flex;
+    flex-direction: row;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+nav ul li {
+    flex: 1;
+    text-align: center;
+    width: 10em;
+}
+
+nav ul li a {
+    display: block;
+    padding: 10px 0;
+    color: var(--white);
+    text-decoration: none;
+    height: 100%;
+}
+
+nav ul li a:hover {
+    background-color: var(--orange_accent);
+}
+
+#content {
+    display: flex;
+    flex-direction: column;
+}
+
+footer {
+    text-align: center;
+    background-color: var(--grey_accent);
+    color: var(--white);
+    margin-bottom: 0;
+    margin-top: auto;
+}

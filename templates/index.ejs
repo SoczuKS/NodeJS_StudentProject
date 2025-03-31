@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="<%= language %>">
+<head>
+    <meta charset="utf-8">
+    <title>MotoMoto</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="SoczuKS">
+    <link rel="stylesheet" href="css/reset.css" type="text/css">
+    <link rel="stylesheet" href="css/main.css" type="text/css">
+</head>
+<body>
+<div id="page">
+    <header>
+        <h1>MotoMoto</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/?page=main">Strona główna</a></li>
+            <li><a href="/?page=wiki">Encyklopedia</a></li>
+            <li><a href="/?page=marketplace">Giełda ogłoszeń</a></li>
+        </ul>
+        <ul>
+            <li><a href="/?page=signin">Zaloguj</a></li>
+            <li><a href="/?page=signout">Wyloguj</a></li>
+        </ul>
+    </nav>
+    <div id="content">
+        <% if (page === 'main') { %>
+            <%- include('main') %>
+        <% } else if (page === 'wiki') { %>
+            <%- include('wiki') %>
+        <% } else if (page === 'marketplace') { %>
+            <%- include('marketplace') %>
+        <% } else if (page === 'signin') { %>
+            <%- include('signin') %>
+        <% } %>
+    </div>
+    <footer>
+        <h4>MotoMoto &copy; 2025</h4>
+    </footer>
+</div>
+</body>
+</html>
