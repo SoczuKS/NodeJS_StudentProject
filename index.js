@@ -25,11 +25,7 @@ async function fetchData(url) {
     return response.json()
 }
 
-const pages = ['main', 'wiki', 'marketplace', 'signin', 'signup']
-
 app.get('/', async (request, response) => {
-    console.log("New request received with query: ", request.query , " and params: ", request.params)
-
     try {
         response.render('index', {language: 'pl', page: 'main', session: request.session})
     } catch(error) {
@@ -40,8 +36,6 @@ app.get('/', async (request, response) => {
 })
 
 app.get('/wiki', (request, response) => {
-    console.log("New request received with query: ", request.query , " and params: ", request.params)
-
     const fetchDataResult = fetchData('http://localhost:3000/api/brands')
 
     fetchDataResult.then(data => {
@@ -54,20 +48,14 @@ app.get('/wiki', (request, response) => {
 })
 
 app.get('/signup', (request, response) => {
-    console.log("New request received with query: ", request.query , " and params: ", request.params)
-
     response.render('index', {language: 'pl', page: 'signup', session: request.session})
 })
 
 app.get('/signin', (request, response) => {
-    console.log("New request received with query: ", request.query , " and params: ", request.params)
-
     response.render('index', {language: 'pl', page: 'signin', session: request.session})
 })
 
 app.get('/marketplace', (request, response) => {
-    console.log("New request received with query: ", request.query , " and params: ", request.params)
-
     response.render('index', {language: 'pl', page: 'marketplace', session: request.session})
 })
 
