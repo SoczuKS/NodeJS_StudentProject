@@ -30,7 +30,11 @@ app.get('/', async (request, response) => {
 })
 
 app.get('/api', (request, response) => {
-    api.process(request, response)
+    api.welcome(request, response)
+})
+
+app.get('/api/brands', (request, response) => {
+    api.getBrands(request, response)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

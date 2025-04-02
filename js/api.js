@@ -1,5 +1,11 @@
 export default class API {
-    process(request, response) {
+    welcome(request, response) {
         response.send('Hello World from API!')
+    }
+
+    getBrands(request, response) {
+        const brands = [
+        ]
+        response.json(brands)
     }
 }
