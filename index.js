@@ -1,32 +1,74 @@
 import express from 'express'
+import session from 'express-session'
 import API from './js/api_stub.js'
+import fetch from 'node-fetch'
 
 const app = express()
 const api = new API()
 const port = 3000
 
+app.use(session({
+    secret: 'abcd1234qwermnbv',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}))
 app.set('views', './templates')
 app.set('view engine', 'ejs')
 app.use(express.static('./public'))
 
+async function fetchData(url) {
+    const response = await fetch(url)
+    if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText)
+    }
+    return response.json()
+}
+
 const pages = ['main', 'wiki', 'marketplace', 'signin', 'signup']
 
 app.get('/', async (request, response) => {
-    console.log("New request received with params: ", request.query)
-
-    let page = request.query.page
-    if (!page || !pages.includes(page)) {
-        console.log("As no page was provided, defaulting to main")
-        page = 'main'
-    }
+    console.log("New request received with query: ", request.query , " and params: ", request.params)
 
     try {
-        response.render('index', {language: 'pl', page: page})
+        response.render('index', {language: 'pl', page: 'main', session: request.session})
     } catch(error) {
         console.error('Błąd odczytu pliku: ', error)
         response.writeHead(500, { 'Content-Type': 'text/plain; charset=UTF-8' })
         response.end()
     }
+})
+
+app.get('/wiki', (request, response) => {
+    console.log("New request received with query: ", request.query , " and params: ", request.params)
+
+    const fetchDataResult = fetchData('http://localhost:3000/api/brands')
+
+    fetchDataResult.then(data => {
+        const brands = data.map(brand => ({
+            id: brand.id,
+            name: brand.name
+        }))
+        response.render('index', {language: 'pl', page: 'wiki', brands: brands, session: request.session})
+    })
+})
+
+app.get('/signup', (request, response) => {
+    console.log("New request received with query: ", request.query , " and params: ", request.params)
+
+    response.render('index', {language: 'pl', page: 'signup', session: request.session})
+})
+
+app.get('/signin', (request, response) => {
+    console.log("New request received with query: ", request.query , " and params: ", request.params)
+
+    response.render('index', {language: 'pl', page: 'signin', session: request.session})
+})
+
+app.get('/marketplace', (request, response) => {
+    console.log("New request received with query: ", request.query , " and params: ", request.params)
+
+    response.render('index', {language: 'pl', page: 'marketplace', session: request.session})
 })
 
 app.get('/api', (request, response) => {
@@ -35,6 +77,10 @@ app.get('/api', (request, response) => {
 
 app.get('/api/brands', (request, response) => {
     api.getBrands(request, response)
+})
+
+app.get('/api/models/:brandId', (request, response) => {
+    api.getModels(request, response)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

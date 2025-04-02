@@ -15,13 +15,17 @@
     </header>
     <nav>
         <ul>
-            <li><a href="/?page=main">Strona główna</a></li>
-            <li><a href="/?page=wiki">Encyklopedia</a></li>
-            <li><a href="/?page=marketplace">Giełda ogłoszeń</a></li>
+            <li><a href="/">Strona główna</a></li>
+            <li><a href="/wiki">Encyklopedia</a></li>
+            <li><a href="/marketplace">Giełda ogłoszeń</a></li>
         </ul>
         <ul>
-            <li><a href="/?page=signin">Zaloguj</a></li>
-            <li><a href="/?page=signout">Wyloguj</a></li>
+            <% if (session.user) {%>
+                <li><a href="/signout">Wyloguj</a></li>
+            <% } else { %>
+                <li><a href="/signin">Zaloguj</a></li>
+                <li><a href="/signup">Zarejestruj</a></li>
+            <% } %>
         </ul>
     </nav>
     <div id="content">
@@ -33,6 +37,8 @@
             <%- include('marketplace') %>
         <% } else if (page === 'signin') { %>
             <%- include('signin') %>
+        <% } else if (page === 'signup') { %>
+            <%- include('signup') %>
         <% } %>
     </div>
     <footer>

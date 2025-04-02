@@ -61,6 +61,31 @@ nav ul li a:hover {
 #content {
     display: flex;
     flex-direction: column;
+    align-self: center;
+    padding-top: 1em;
+}
+
+#account_form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 15vw;
+}
+
+#account_form button {
+    width: 50%;
+    align-self: center;
+}
+
+#account_form > div {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+#account_form > p {
+    text-align: center;
 }
 
 footer {
