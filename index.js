@@ -1,5 +1,5 @@
 import express from 'express'
-import API from './js/api.js'
+import API from './js/api_stub.js'
 
 const app = express()
 const api = new API()
