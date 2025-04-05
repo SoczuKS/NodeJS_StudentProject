@@ -5,8 +5,8 @@
     <title>MotoMoto</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="SoczuKS">
-    <link rel="stylesheet" href="css/reset.css" type="text/css">
-    <link rel="stylesheet" href="css/main.css" type="text/css">
+    <link rel="stylesheet" href="/css/reset.css" type="text/css">
+    <link rel="stylesheet" href="/css/main.css" type="text/css">
 </head>
 <body>
 <div id="page">
@@ -29,20 +29,10 @@
         </ul>
     </nav>
     <div id="content">
-        <% if (page === 'main') { %>
-            <%- include('main') %>
-        <% } else if (page === 'wiki') { %>
-            <%- include('wiki') %>
-        <% } else if (page === 'marketplace') { %>
-            <%- include('marketplace') %>
-        <% } else if (page === 'signin') { %>
-            <%- include('signin') %>
-        <% } else if (page === 'signup') { %>
-            <%- include('signup') %>
-        <% } %>
+        <%- include(page) %>
     </div>
     <footer>
-        <h4>MotoMoto &copy; 2025</h4>
+        <h4>MotoMoto&copy; 2025</h4>
     </footer>
 </div>
 </body>

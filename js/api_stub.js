@@ -23,6 +23,22 @@ export default class API {
         response.json(dummyBrands)
     }
 
+    getBrand(request, response) {
+        const brandId = parseInt(request.params.brandId)
+        if (!brandId) {
+            response.status(400).send('Missing brandId parameter')
+            return
+        }
+
+        const brand = dummyBrands.find(brand => brand.id === brandId)
+        if (!brand) {
+            response.status(404).send('Brand not found')
+            return
+        }
+
+        response.json(brand)
+    }
+
     getModels(request, response) {
         const brandId = parseInt(request.params.brandId)
         if (!brandId) {
@@ -37,5 +53,21 @@ export default class API {
         }
 
         response.json(models)
+    }
+
+    getModel(request, response) {
+        const modelId = parseInt(request.params.modelId)
+        if (!modelId) {
+            response.status(400).send('Missing modelId parameter')
+            return
+        }
+
+        const model = dummyCarModels.find(model => model.id === modelId)
+        if (!model) {
+            response.status(404).send('Model not found')
+            return
+        }
+
+        response.json(model)
     }
 }
