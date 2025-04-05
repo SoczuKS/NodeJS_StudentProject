@@ -4,8 +4,7 @@ export default class API {
     }
 
     getBrands(request, response) {
-        const brands = [
-        ]
+        const brands = []
         response.json(brands)
     }
 }
