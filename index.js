@@ -14,6 +14,8 @@ app.use(session({
     saveUninitialized: true,
     cookie: {secure: false}
 }))
+app.use(express.json())
+app.use(express.urlencoded({extended: true}))
 app.set('views', './templates')
 app.set('view engine', 'ejs')
 app.use(express.static('./public', {
@@ -120,8 +122,20 @@ app.get('/signup', (request, response) => {
     response.render('index', {language: 'pl', page: 'signup', session: request.session})
 })
 
+app.post('/signup', (request, response) => {
+    const { username, password, email, firstname, lastname, phone } = request.body
+    console.log(`Received signup data: ${username}, ${password}, ${email}, ${firstname}, ${lastname}, ${phone}`)
+    response.redirect('/')
+})
+
 app.get('/signin', (request, response) => {
     response.render('index', {language: 'pl', page: 'signin', session: request.session})
+})
+
+app.post('/signin', (request, response) => {
+    const { username, password } = request.body
+    console.log(`Received signin data: ${username}, ${password}`)
+    response.redirect('/')
 })
 
 app.get('/marketplace', (request, response) => {
