@@ -7,7 +7,7 @@ export default class DatabaseConnector {
     }
 
     connect() {
-        const dbPath = './database.db';
+        const dbPath = './database.sqlite';
         const isNewDatabase = !fs.existsSync(dbPath);
 
         this.db = new sqlite3.Database(dbPath, (err) => {
