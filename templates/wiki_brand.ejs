@@ -1,5 +1,7 @@
 <h2><%= brand.name %></h2>
-<ul>
+<div id="brand_info">
+</div>
+<ul id="models_list">
     <% for (const model of models) { %>
         <li><a href="/wiki/model/<%= model.id %>"><%= model.name %></a></li>
     <% } %>

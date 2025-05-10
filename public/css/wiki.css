@@ -1,0 +1,26 @@
+#brands_list, #models_list {
+    padding: 0;
+    list-style-type: none;
+    column-gap: 5vw;
+    column-count: 3;
+    column-fill: auto;
+}
+
+#brands_list > li, #models_list > li {
+    margin-bottom: 5px;
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+#brands_list > li a, #models_list > li a {
+    text-decoration: none;
+    color: black;
+}
+
+#brands_list > li a:visited, #models_list > li a:visited {
+    color: black;
+}
+
+h2 {
+    text-align: center;
+}

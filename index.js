@@ -62,11 +62,7 @@ app.get('/', async (request, response) => {
 
 app.get('/wiki', (request, response) => {
     const fetchDataResult = fetchData('http://localhost:3000/api/brands')
-    fetchDataResult.then(data => {
-        const brands = data.map(brand => ({
-            id: brand.id,
-            name: brand.name
-        }))
+    fetchDataResult.then(brands => {
         response.render('index', {
             language: 'pl',
             page: 'wiki',
