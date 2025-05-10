@@ -1,13 +1,10 @@
 import express from 'express'
 import session from 'express-session'
-import API from './js/api_stub.js'
 import fetch from 'node-fetch'
-//import API from './js/api.js'
-import DatabaseConnector from "./js/database.js"
+import API from './js/api.js'
 
 const app = express()
 const api = new API()
-const db = new DatabaseConnector()
 const port = 3000
 const apiUrl = 'http://localhost:3000/api/'
 
@@ -30,7 +27,6 @@ app.use(express.static('./public', {
         }
     }
 }))
-db.connect();
 
 async function fetchData(url) {
     const response = await fetch(url)
@@ -121,6 +117,17 @@ app.get('/wiki/model/:modelId', (request, response) => {
         response.status(500).send('Error fetching model')
     })
 })
+
+app.get('/marketplace', (request, response) => {
+    api.getBrands(request, {
+        json: (brands) => {
+            response.render('marketplace', { brands, session: request.session });
+        },
+        status: (code) => ({
+            send: (message) => response.status(code).send(message)
+        })
+    });
+});
 
 app.get('/signup', (request, response) => {
     response.render('index', {language: 'pl', page: 'signup', session: request.session})
