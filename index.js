@@ -2,9 +2,12 @@ import express from 'express'
 import session from 'express-session'
 import API from './js/api_stub.js'
 import fetch from 'node-fetch'
+//import API from './js/api.js'
+import DatabaseConnector from "./js/database.js"
 
 const app = express()
 const api = new API()
+const db = new DatabaseConnector()
 const port = 3000
 const apiUrl = 'http://localhost:3000/api/'
 
@@ -27,6 +30,7 @@ app.use(express.static('./public', {
         }
     }
 }))
+db.connect();
 
 async function fetchData(url) {
     const response = await fetch(url)
