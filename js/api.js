@@ -66,7 +66,58 @@ export default class API {
     }
 
     signIn(request, response) {
+        const username = request.body.username
+        const password = request.body.password
 
+        this.db.db.get(username, [username], (err, row) => {
+            if(err){
+                console.error('Error fetching user:', err)
+                response.status(500).send('Error fetching user')
+            }
+            else{
+                if(row && row.password === password){
+                    request.session.user = {
+                        id: row.id,
+                        username: row.username
+                    }
+                    response.json({success: true})
+                }
+                else{
+                    console.error('Invalid username or password')
+                    response.json({success: false})
+                }
+            }
+        })
+    }
+
+    signUp(request, response){
+        const username = request.body.username
+        const password = request.body.password
+        const name = request.body.firstname
+        const surname = request.body.lastname
+        const phone = request.body.phone
+        const email = request.body.email
+
+        if (!username || !password || !name || !surname || !phone || !email) {
+            return console.error('fields: ' + username + ' ' + password + ' ' + name + ' ' + surname + ' ' + phone + ' ' + email);
+        }
+
+        const query = 'insert into user (username, password, name, surname, phoneNumber, email, permissionLevel) values (?, ?, ?, ?, ?, ?, ?)'
+        const values = [username, password, name, surname, phone, email, 1]
+
+        this.db.db.run(query, values, function(err){
+            if(err){
+                console.error('Error inserting user:', err)
+                response.status(500).send('Error inserting user')
+            }
+            else{
+                request.session.user = {
+                    id: this.lastID,
+                    username: username
+                }
+                response.json({success: true})
+            }
+        })
     }
 
 

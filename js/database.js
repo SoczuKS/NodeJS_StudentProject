@@ -86,12 +86,14 @@ export default class DatabaseConnector {
             create table user
             (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                username        varchar(26) NOT NULL,
+                password        varchar(30) NOT NULL,
                 name            varchar(20) NOT NULL,
-                surname         varchar(20) NOT NULL,
-                age             int         NOT NULL,
+                surname         varchar(55) NOT NULL,
+                age             int,
                 phoneNumber     varchar(15) NOT NULL,
                 email           varchar(30) NOT NULL,
-                address         varchar(50) NOT NULL,
+                address         varchar(50),
                 permissionLevel int         NOT NULL
             );
 
@@ -162,6 +164,11 @@ export default class DatabaseConnector {
                    (3, 3, 6, '1996-12-04', null, 2.0, 150, 2, 2016),
                    (4, 4, 1, '1966-05-01', null, 1.8, 140, 4, 2020),
                    (11, 12, 3, '2021-01-01', null, null, 235, 3, 2022);
+
+            insert into user (username, password, name, surname, age,
+                              phoneNumber, email, permissionLevel)
+            values ('Admin', 'Admin', 'Admin', 'Admin', NULL, '000000000', 'admin@admin.com', 0),
+                   ('DummyClient', 'zaq1@wsx', 'Wierzchosława', 'Czartoryski Rostworowski-Mycielski Anderson Scimone', 20, '123456789', 'dummy@gmail.com', 1)
         `);
     }
 }

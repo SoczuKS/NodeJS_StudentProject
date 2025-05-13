@@ -130,13 +130,30 @@ app.get('/marketplace', (request, response) => {
 });
 
 app.get('/signup', (request, response) => {
-    response.render('index', {language: 'pl', page: 'signup', session: request.session})
+    api.signIn(request, {
+        json: (result) => {
+            if (result.success) {
+                response.redirect('/')
+            } else {
+                response.render('index', {language: 'pl', page: 'signup', session: request.session})
+            }
+        }
+    })
 })
 
 app.post('/signup', (request, response) => {
     const { username, password, email, firstname, lastname, phone } = request.body
     console.log(`Received signup data: ${username}, ${password}, ${email}, ${firstname}, ${lastname}, ${phone}`)
-    response.redirect('/')
+
+    api.signUp(request, {
+        json: (result) => {
+            if (result.success) {
+                response.redirect('/')
+            } else {
+                response.status(400).send('Signup failed')
+            }
+        }
+    })
 })
 
 app.get('/signin', (request, response) => {
