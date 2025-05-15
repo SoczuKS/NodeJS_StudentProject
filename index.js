@@ -36,6 +36,20 @@ async function fetchData(url) {
     return response.json()
 }
 
+async function postData(url, data) {
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    if (!response.ok) {
+        throw new Error('Network response was not ok ' + response.statusText)
+    }
+    return response.json()
+}
+
 app.get('/', async (request, response) => {
     try {
         response.render('index', {language: 'pl', page: 'main', session: request.session})
@@ -118,56 +132,36 @@ app.get('/wiki/model/:modelId', (request, response) => {
     })
 })
 
-app.get('/marketplace', (request, response) => {
-    api.getBrands(request, {
-        json: (brands) => {
-            response.render('marketplace', { brands, session: request.session });
-        },
-        status: (code) => ({
-            send: (message) => response.status(code).send(message)
-        })
-    });
-});
-
 app.get('/signup', (request, response) => {
-    api.signIn(request, {
-        json: (result) => {
-            if (result.success) {
-                response.redirect('/')
-            } else {
-                response.render('index', {language: 'pl', page: 'signup', session: request.session})
-            }
-        }
-    })
-})
-
-app.post('/signup', (request, response) => {
-    const { username, password, email, firstname, lastname, phone } = request.body
-    console.log(`Received signup data: ${username}, ${password}, ${email}, ${firstname}, ${lastname}, ${phone}`)
-
-    api.signUp(request, {
-        json: (result) => {
-            if (result.success) {
-                response.redirect('/')
-            } else {
-                response.status(400).send('Signup failed')
-            }
-        }
-    })
+    response.render('index', {language: 'pl', page: 'signup', session: request.session})
 })
 
 app.get('/signin', (request, response) => {
     response.render('index', {language: 'pl', page: 'signin', session: request.session})
 })
 
-app.post('/signin', (request, response) => {
-    const { username, password } = request.body
-    console.log(`Received signin data: ${username}, ${password}`)
-    response.redirect('/')
-})
-
 app.get('/marketplace', (request, response) => {
     response.render('index', {language: 'pl', page: 'marketplace', session: request.session})
+})
+
+app.post('/signup', (request, response) => {
+    const postDataResult = postData('http://localhost:3000/api/signup', request.body)
+    postDataResult.then(data => {
+        console.log('Received signup data:', data)
+        response.redirect('/')
+    })
+})
+
+app.post('/signin', (request, response) => {
+    const postDataResult = postData('http://localhost:3000/api/signin', request.body)
+    postDataResult.then(data => {
+        console.log('Received signin data:', data)
+        if (data.success) {
+            response.redirect('/')
+        } else {
+            response.redirect('/signin')
+        }
+    })
 })
 
 app.get('/api', (request, response) => {
@@ -188,6 +182,14 @@ app.get('/api/models/:brandId', (request, response) => {
 
 app.get('/api/model/:modelId', (request, response) => {
     api.getModel(request, response)
+})
+
+app.post('/api/signin', (request, response) => {
+    api.signIn(request, response)
+})
+
+app.post('/api/signup', (request, response) => {
+    api.signUp(request, response)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`))
