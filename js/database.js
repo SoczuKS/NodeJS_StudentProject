@@ -41,14 +41,14 @@ export default class DatabaseConnector {
             create table brand
             (
                 id      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                name    varchar(28) NOT NULL,
+                name    varchar(28) NOT NULL UNIQUE,
                 country varchar(20) NOT NULL
             );
 
             create table model
             (
                 id      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                name    varchar(20) NOT NULL,
+                name    varchar(20) NOT NULL UNIQUE,
                 brandId int         NOT NULL,
                 FOREIGN KEY (brandId) REFERENCES brand (id)
             );
@@ -56,13 +56,13 @@ export default class DatabaseConnector {
             create table fuelType
             (
                 id   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                name varchar(16) NOT NULL
+                name varchar(16) NOT NULL UNIQUE
             );
 
             create table bodyType
             (
                 id   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                name varchar(16) NOT NULL
+                name varchar(16) NOT NULL UNIQUE
             );
 
             create table modelVersion
@@ -86,13 +86,13 @@ export default class DatabaseConnector {
             create table user
             (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                username        varchar(26) NOT NULL,
+                username        varchar(26) NOT NULL UNIQUE,
                 password        varchar(30) NOT NULL,
                 name            varchar(20) NOT NULL,
                 surname         varchar(55) NOT NULL,
                 age             int,
-                phoneNumber     varchar(15) NOT NULL,
-                email           varchar(30) NOT NULL,
+                phoneNumber     varchar(15) NOT NULL UNIQUE,
+                email           varchar(30) NOT NULL UNIQUE,
                 address         varchar(50),
                 permissionLevel int         NOT NULL
             );
@@ -100,6 +100,7 @@ export default class DatabaseConnector {
             create table offer
             (
                 id             INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                title          varchar(50) NOT NULL,
                 modelVersionId int  NOT NULL,
                 userId         int  NOT NULL,
                 description    varchar(200),

@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt'
 import DatabaseConnector from "./database.js";
 
 export default class API {
@@ -65,17 +66,23 @@ export default class API {
         const username = request.body.username
         const password = request.body.password
 
-        this.db.db.get(username, [username], (err, row) => {
+        const query = 'select * from user where username = ?'
+        this.db.db.get(query, [username], (err, row) => {
             if (err) {
                 console.error('Error fetching user:', err)
-                response.status(500).send('Error fetching user')
             } else {
-                if (row && row.password === password) {
-                    request.session.user = {
-                        id: row.id,
-                        username: row.username
-                    }
-                    response.json({success: true})
+                if (row) {
+                    bcrypt.compare(password, row.password, (err, result) => {
+                        if (result) {
+                            request.session.user = {
+                                username: row.username
+                            }
+                            response.json({success: true})
+                        } else {
+                            console.error('Invalid username or password')
+                            response.json({success: false})
+                        }
+                    })
                 } else {
                     console.error('Invalid username or password')
                     response.json({success: false})
@@ -92,26 +99,25 @@ export default class API {
         const phone = request.body.phone
         const email = request.body.email
 
-        if (!username || !password || !name || !surname || !phone || !email) {
-            return console.error('fields: ' + username + ' ' + password + ' ' + name + ' ' + surname + ' ' + phone + ' ' + email);
-        }
-
-        const query = 'insert into user (username, password, name, surname, phoneNumber, email, permissionLevel) values (?, ?, ?, ?, ?, ?, ?)'
-        const values = [username, password, name, surname, phone, email, 1]
-
-        this.db.db.run(query, values, function (err) {
+        bcrypt.hash(password, 5, (err, hashedPassword) => {
             if (err) {
-                console.error('Error inserting user:', err)
-                response.status(500).send('Error inserting user')
-            } else {
-                request.session.user = {
-                    id: this.lastID,
-                    username: username
-                }
-                response.json({success: true})
+                console.error('Error hashing password:', err)
             }
+
+            const query = 'insert into user (username, password, name, surname, phoneNumber, email, permissionLevel) values (?, ?, ?, ?, ?, ?, ?)'
+            const values = [username, hashedPassword, name, surname, phone, email, 1]
+
+            this.db.db.run(query, values, function (err) {
+                if (err) {
+                    console.error('Error inserting user:', err)
+                } else {
+                    request.session.user = {
+                        id: this.lastID,
+                        username: username
+                    }
+                    response.json({success: true})
+                }
+            })
         })
     }
-
-
 }
