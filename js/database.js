@@ -3,21 +3,21 @@ import fs from 'fs';
 
 export default class DatabaseConnector {
     constructor() {
-        this.db = null;
+        this.database = null;
     }
 
     connect() {
         const dbPath = './database.sqlite';
         const isNewDatabase = !fs.existsSync(dbPath);
 
-        this.db = new sqlite3.Database(dbPath, (err) => {
+        this.database = new sqlite3.Database(dbPath, (err) => {
             if (err) {
                 console.error(err.message);
             } else {
                 console.log('Connected to the database.');
                 if (isNewDatabase) {
                     console.log('Database file created. Initializing tables...');
-                    this.createTables(this.db);
+                    this.createTables(this.database);
                     console.log("Tables created and initial data inserted.");
                 }
             }
@@ -25,8 +25,8 @@ export default class DatabaseConnector {
     }
 
     close() {
-        if (this.db) {
-            this.db.close((err) => {
+        if (this.database) {
+            this.database.close((err) => {
                 if (err) {
                     console.error(err.message);
                 } else {

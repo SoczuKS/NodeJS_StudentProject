@@ -31,7 +31,7 @@ app.use(express.static('./public', {
 async function fetchData(url) {
     const response = await fetch(url)
     if (!response.ok) {
-        throw new Error('Network response was not ok ' + response.statusText)
+        throw new Error(`Network response was not ok [${response.status}] ${response.statusText}`)
     }
     return response.json()
 }
@@ -45,7 +45,7 @@ async function postData(url, data) {
         body: JSON.stringify(data)
     })
     if (!response.ok) {
-        throw new Error('Network response was not ok ' + response.statusText)
+        throw new Error(`Network response was not ok [${response.status}] ${response.statusText}`)
     }
     return response.json()
 }
@@ -61,8 +61,7 @@ app.get('/', async (request, response) => {
 })
 
 app.get('/wiki', (request, response) => {
-    const fetchDataResult = fetchData('http://localhost:3000/api/brands')
-    fetchDataResult.then(brands => {
+    fetchData(`${apiUrl}brands`).then(brands => {
         response.render('index', {
             language: 'pl',
             page: 'wiki',
@@ -70,13 +69,15 @@ app.get('/wiki', (request, response) => {
             brands: brands,
             session: request.session
         })
+    }).catch(_ => {
+        response.redirect('/')
     })
 })
 
 app.get('/wiki/brand/:brandId', (request, response) => {
-    const brandId = parseInt(request.params.brandId)
+    const {brandId} = request.params
     if (!brandId) {
-        response.status(400).send('Missing brandId parameter')
+        response.redirect('/')
         return
     }
 
@@ -90,20 +91,18 @@ app.get('/wiki/brand/:brandId', (request, response) => {
                 session: request.session,
                 models: models
             })
-        }).catch(error => {
-            console.error('Error fetching models:', error)
-            response.status(500).send('Error fetching models')
+        }).catch(_ => {
+            response.redirect('/')
         })
-    }).catch(error => {
-        console.error('Error fetching brand:', error)
-        response.status(500).send('Error fetching brand')
+    }).catch(_ => {
+        response.redirect('/')
     })
 })
 
 app.get('/wiki/model/:modelId', (request, response) => {
-    const modelId = parseInt(request.params.modelId)
+    const {modelId} = request.params
     if (!modelId) {
-        response.status(400).send('Missing modelId parameter')
+        response.redirect('/')
         return
     }
 
@@ -142,8 +141,9 @@ app.get('/marketplace', (request, response) => {
 
 app.post('/signup', (request, response) => {
     const postDataResult = postData('http://localhost:3000/api/signup', request.body)
-    postDataResult.then(data => {
-        console.log('Received signup data:', data)
+    postDataResult.then(_ => {
+        response.redirect('/')
+    }).catch(_ => {
         response.redirect('/')
     })
 })
@@ -157,6 +157,8 @@ app.post('/signin', (request, response) => {
         } else {
             response.redirect('/signin')
         }
+    }).catch(_ => {
+        response.redirect('/')
     })
 })
 

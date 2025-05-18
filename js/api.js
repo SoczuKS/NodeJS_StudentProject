@@ -3,8 +3,8 @@ import DatabaseConnector from "./database.js";
 
 export default class API {
     constructor() {
-        this.db = new DatabaseConnector()
-        this.db.connect()
+        this.databaseConnector = new DatabaseConnector()
+        this.databaseConnector.connect()
     }
 
     welcome(request, response) {
@@ -12,112 +12,123 @@ export default class API {
     }
 
     getBrands(request, response) {
-        const query = 'select * from brand order by name ASC'
-        this.db.db.all(query, [], (err, rows) => {
+        this.databaseConnector.database.all('select * from brand order by name', [], (err, rows) => {
             if (err) {
                 console.error('Error fetching brands:', err)
                 response.status(500).send('Error fetching brands')
-            } else {
-                response.json(rows)
+                return
             }
+
+            response.json(rows)
         })
     }
 
     getBrand(request, response) {
-        const brandId = parseInt(request.params.brandId)
-        const query = 'select * from brand where id = ?'
-        this.db.db.get(query, [brandId], (err, row) => {
+        const {brandId} = request.params
+        if (!brandId) {
+            console.error(`Error fetching brand: ${brandId}`)
+            response.status(400).send('Brand ID is required')
+            return
+        }
+
+        this.databaseConnector.database.get('select * from brand where id = ?', [parseInt(brandId)], (err, row) => {
             if (err) {
                 console.error('Error fetching brand:', err)
                 response.status(500).send('Error fetching brand')
-            } else {
-                response.json(row)
+                return
             }
+
+            response.json(row)
         })
     }
 
     getModels(request, response) {
-        const brandId = parseInt(request.params.brandId)
-        const query = 'select * from model where brandId = ? order by name ASC'
-        this.db.db.all(query, [brandId], (err, rows) => {
+        const {brandId} = request.params
+        if (!brandId) {
+            response.status(400).send('Brand ID is required')
+            return
+        }
+
+        this.databaseConnector.database.all('select * from model where brandId = ? order by name', [parseInt(brandId)], (err, rows) => {
             if (err) {
                 console.error('Error fetching models:', err)
                 response.status(500).send('Error fetching models')
-            } else {
-                response.json(rows)
+                return
             }
+            response.json(rows)
         })
     }
 
     getModel(request, response) {
-        const modelId = parseInt(request.params.modelId)
-        const query = 'select * from model where id = ?'
-        this.db.db.get(query, [modelId], (err, row) => {
+        const {modelId} = request.params
+        if (!modelId) {
+            response.status(400).send('Model ID is required')
+            return
+        }
+
+        this.databaseConnector.database.get('select * from model where id = ?', [parseInt(modelId)], (err, row) => {
             if (err) {
                 console.error('Error fetching model:', err)
                 response.status(500).send('Error fetching model')
-            } else {
-                response.json(row)
+                return
             }
+
+            response.json(row)
         })
     }
 
     signIn(request, response) {
-        const username = request.body.username
-        const password = request.body.password
+        const {username, password} = request.body
 
         const query = 'select * from user where username = ?'
-        this.db.db.get(query, [username], (err, row) => {
+        this.databaseConnector.database.get(query, [username], (err, row) => {
             if (err) {
-                console.error('Error fetching user:', err)
-            } else {
-                if (row) {
-                    bcrypt.compare(password, row.password, (err, result) => {
-                        if (result) {
-                            request.session.user = {
-                                username: row.username
-                            }
-                            response.json({success: true})
-                        } else {
-                            console.error('Invalid username or password')
-                            response.json({success: false})
-                        }
-                    })
-                } else {
-                    console.error('Invalid username or password')
-                    response.json({success: false})
-                }
+                console.error(err)
+                response.status(500).send('Error fetching user')
+                return
             }
+
+            if (!row) {
+                response.json({success: false})
+                return
+            }
+
+            bcrypt.compare(password, row.password, (err, result) => {
+                if (!result) {
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            })
         })
     }
 
     signUp(request, response) {
-        const username = request.body.username
-        const password = request.body.password
-        const name = request.body.firstname
-        const surname = request.body.lastname
-        const phone = request.body.phone
-        const email = request.body.email
+        const {username, password, firstname, lastname, phone, email} = request.body
 
         bcrypt.hash(password, 5, (err, hashedPassword) => {
             if (err) {
                 console.error('Error hashing password:', err)
+                response.status(500).send('Error hashing password')
+                return
             }
 
-            const query = 'insert into user (username, password, name, surname, phoneNumber, email, permissionLevel) values (?, ?, ?, ?, ?, ?, ?)'
-            const values = [username, hashedPassword, name, surname, phone, email, 1]
-
-            this.db.db.run(query, values, function (err) {
-                if (err) {
-                    console.error('Error inserting user:', err)
-                } else {
-                    request.session.user = {
-                        id: this.lastID,
-                        username: username
+            this.databaseConnector.database.run(
+                'insert into user (username, password, name, surname, phoneNumber, email, permissionLevel) values (?, ?, ?, ?, ?, ?, ?)',
+                [username, hashedPassword, firstname, lastname, phone, email, 1],
+                (err) => {
+                    if (err) {
+                        console.error('Error inserting user:', err)
+                        response.status(500).send('Error fetching user')
+                        return
                     }
-                    response.json({success: true})
-                }
-            })
+                    response.json({
+                        success: true,
+                        user: {
+                            username: username
+                        }
+                    })
+                })
         })
     }
 }
