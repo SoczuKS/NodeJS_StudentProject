@@ -152,7 +152,9 @@ app.post('/signin', (request, response) => {
     const postDataResult = postData('http://localhost:3000/api/signin', request.body)
     postDataResult.then(data => {
         console.log('Received signin data:', data)
-        if (data.success) {
+        if (data.success === true) {
+            request.session.user = data.user
+            response.session = request.session
             response.redirect('/')
         } else {
             response.redirect('/signin')

@@ -81,24 +81,31 @@ export default class API {
         const {username, password} = request.body
 
         const query = 'select * from user where username = ?'
-        this.databaseConnector.database.get(query, [username], (err, row) => {
+        this.databaseConnector.database.get(query, [username], (err, user) => {
             if (err) {
                 console.error(err)
                 response.status(500).send('Error fetching user')
                 return
             }
 
-            if (!row) {
+            if (!user) {
                 response.json({success: false})
                 return
             }
 
-            bcrypt.compare(password, row.password, (err, result) => {
-                if (!result) {
+            bcrypt.compare(password, user.password, (err, matched) => {
+                if (!matched) {
                     response.json({success: false})
                     return
                 }
-                response.json({success: true})
+                response.json({
+                    success: true,
+                    user: {
+                        username: user.username,
+                        permissionLevel: user.permissionLevel
+                    },
+                    token: request.session.id
+                })
             })
         })
     }
@@ -122,12 +129,7 @@ export default class API {
                         response.status(500).send('Error fetching user')
                         return
                     }
-                    response.json({
-                        success: true,
-                        user: {
-                            username: username
-                        }
-                    })
+                    response.json({success: true})
                 })
         })
     }
