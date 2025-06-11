@@ -1,5 +1,6 @@
-import sqlite3 from 'sqlite3';
-import fs from 'fs';
+import sqlite3 from 'sqlite3'
+import fs from 'fs'
+import bcrypt from 'bcrypt'
 
 export default class DatabaseConnector {
     constructor() {
@@ -101,11 +102,11 @@ export default class DatabaseConnector {
             (
                 id             INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 title          varchar(50) NOT NULL,
-                modelVersionId int  NOT NULL,
-                userId         int  NOT NULL,
+                modelVersionId int         NOT NULL,
+                userId         int         NOT NULL,
                 description    varchar(200),
-                mileage        int  NOT NULL,
-                price          real NOT NULL,
+                mileage        int         NOT NULL,
+                price          real        NOT NULL,
                 FOREIGN KEY (modelVersionId) REFERENCES modelVersion (id),
                 FOREIGN KEY (userId) REFERENCES user (id)
             );
@@ -158,18 +159,47 @@ export default class DatabaseConnector {
                    ('wagon'),
                    ('crossover'),
                    ('pickup');
-        
+
             insert into modelVersion (brandId, modelId, bodyTypeId, productionStart,
                                       productionEnd, engineCapacity, power, fuelTypeId, productionYear)
             values (1, 1, 2, '1993-02-01', '2018-06-22', 1.2, 60, 1, 2004),
                    (3, 3, 6, '1996-12-04', null, 2.0, 150, 2, 2016),
                    (4, 4, 1, '1966-05-01', null, 1.8, 140, 4, 2020),
                    (11, 12, 3, '2021-01-01', null, null, 235, 3, 2022);
-
-            insert into user (username, password, name, surname, age,
-                              phoneNumber, email, permissionLevel)
-            values ('Admin', 'Admin', 'Admin', 'Admin', NULL, '000000000', 'admin@admin.com', 0),
-                   ('DummyClient', 'zaq1@wsx', 'Wierzchosława', 'Czartoryski Rostworowski-Mycielski Anderson Scimone', 20, '123456789', 'dummy@gmail.com', 1)
         `);
+
+        bcrypt.hash('Admin', 5, (err, hashedPassword) => {
+            if (err) {
+                console.error('Error hashing password:', err)
+                throw err
+            }
+
+            db.run(
+                'insert into user (username, password, name, surname, phoneNumber, email, permissionLevel) values (?, ?, ?, ?, ?, ?, ?)',
+                ['Admin', hashedPassword, 'Admin', 'Admin', '000000000', 'admin@admin.com', 0],
+                (err) => {
+                    if (err) {
+                        console.error('Error inserting user:', err)
+                        throw err
+                    }
+                })
+        })
+
+        bcrypt.hash('zaq1@WSX', 5, (err, hashedPassword) => {
+            if (err) {
+                console.error('Error hashing password:', err)
+                throw err
+            }
+
+            db.run(
+                'insert into user (username, password, name, surname, age, phoneNumber, email, permissionLevel) values (?, ?, ?, ?, ?, ?, ?, ?)',
+                ['DummyClient', hashedPassword, 'Wierzchosława', 'Czartoryski Rostworowski-Mycielski Anderson Scimone', 20, '123456789', 'dummy@gmail.com', 1],
+                (err) => {
+                    if (err) {
+                        console.error('Error inserting user:', err)
+                        throw err
+                    }
+                })
+        })
     }
 }

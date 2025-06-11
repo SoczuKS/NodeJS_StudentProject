@@ -20,6 +20,9 @@
             <li><a href="/">Strona główna</a></li>
             <li><a href="/wiki">Encyklopedia</a></li>
             <li><a href="/marketplace">Giełda ogłoszeń</a></li>
+            <% if (session.user && session.user.permissionLevel === 0) { %>
+                <li><a href="/adminpanel">Panel admina</a></li>
+            <% } %>
         </ul>
         <ul>
             <% if (session.user) { %>
