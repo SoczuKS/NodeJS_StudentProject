@@ -24,3 +24,9 @@
 h2 {
     text-align: center;
 }
+
+#wiki_view {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}

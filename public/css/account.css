@@ -10,6 +10,10 @@
     align-self: center;
 }
 
+#account_form label {
+    padding-top: 3px;
+}
+
 #account_form > div {
     display: flex;
     flex-direction: row;

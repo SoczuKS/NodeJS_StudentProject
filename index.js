@@ -148,6 +148,15 @@ app.get('/adminpanel', (request, response) => {
     response.render('index', {language: 'pl', page: 'adminpanel', subpage: 'adminpanel_main', session: request.session})
 })
 
+app.get('/adminpanel/users', (request, response) => {
+    if (!request.session || !request.session.user || request.session.user.permissionLevel !== 0) {
+        response.redirect('/')
+        return
+    }
+
+    response.render('index', {language: 'pl', page: 'adminpanel', subpage: 'adminpanel_users', session: request.session})
+})
+
 app.post('/signup', (request, response) => {
     const postDataResult = postData('http://localhost:3000/api/signup', request.body)
     postDataResult.then(_ => {
