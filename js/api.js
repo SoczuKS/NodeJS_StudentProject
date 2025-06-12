@@ -77,6 +77,24 @@ export default class API {
         })
     }
 
+    getModelVersions(request, response) {
+        const {modelId} = request.params
+        if (!modelId) {
+            response.status(400).send('Model ID is required')
+            return
+        }
+
+        this.databaseConnector.database.all('select * from modelVersion where modelId = ? order by productionStart', [parseInt(modelId)], (err, rows) => {
+            if (err) {
+                console.error('Error fetching model versions:', err)
+                response.status(500).send('Error fetching model versions')
+                return
+            }
+
+            response.json(rows)
+        })
+    }
+
     signIn(request, response) {
         const {username, password} = request.body
 
