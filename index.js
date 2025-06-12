@@ -157,6 +157,15 @@ app.get('/adminpanel/users', (request, response) => {
     response.render('index', {language: 'pl', page: 'adminpanel', subpage: 'adminpanel_users', session: request.session})
 })
 
+app.post('/adminpanel/wiki/brands/add', (request, response) => {
+    const postDataResult = postData('http://localhost:3000/api/addBrand', request.body)
+    postDataResult.then(_ => {
+        response.redirect('/wiki')
+    }).catch(_ => {
+        response.redirect('/wiki')
+    })
+})
+
 app.post('/signup', (request, response) => {
     const postDataResult = postData('http://localhost:3000/api/signup', request.body)
     postDataResult.then(_ => {
@@ -208,6 +217,10 @@ app.post('/api/signin', (request, response) => {
 
 app.post('/api/signup', (request, response) => {
     api.signUp(request, response)
+})
+
+app.post('/api/addBrand', (request, response) => {
+    api.addBrand(request, response)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

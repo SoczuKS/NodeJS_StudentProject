@@ -69,7 +69,6 @@ export default class DatabaseConnector {
             create table modelVersion
             (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                brandId         int  NOT NULL,
                 modelId         int  NOT NULL,
                 bodyTypeId      int  NOT NULL,
                 productionStart date NOT NULL,
@@ -77,8 +76,6 @@ export default class DatabaseConnector {
                 engineCapacity  real,
                 power           int  NOT NULL,
                 fuelTypeId      int  NOT NULL,
-                productionYear  int  NOT NULL,
-                FOREIGN KEY (brandId) REFERENCES brand (id),
                 FOREIGN KEY (modelId) REFERENCES model (id),
                 FOREIGN KEY (bodyTypeId) REFERENCES bodyType (id),
                 FOREIGN KEY (fuelTypeId) REFERENCES fuelType (id)

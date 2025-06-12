@@ -42,6 +42,41 @@ export default class API {
         })
     }
 
+    addBrand(request, response) {
+        const {brand_name, brand_country} = request.body
+
+        this.databaseConnector.database.run('insert into brand (name, country) values (?, ?)', [brand_name, brand_country], (err, rows) => {
+            if (err) {
+                console.error('Error adding brand:', err)
+                response.status(500).send('Error adding brand')
+                return
+            }
+
+            if(!brand_name || !brand_country){
+                response.json({success: false})
+            }
+
+            response.json({success: true})
+        })
+    }
+
+    deleteBrand(request, response) {
+        const {id} = request.params
+
+        this.databaseConnector.database.run('delete from brand where id = ?', [id], (err, rows) => {
+            if (err) {
+                console.error('Error deleting brand:', err)
+                response.status(500).send('Error deleting brand')
+            }
+
+            if(!id){
+                response.json({success: false})
+            }
+
+            response.json({success: true})
+        })
+    }
+
     getModels(request, response) {
         const {brandId} = request.params
         if (!brandId) {
@@ -84,7 +119,20 @@ export default class API {
             return
         }
 
-        this.databaseConnector.database.all('select * from modelVersion where modelId = ? order by productionStart', [parseInt(modelId)], (err, rows) => {
+        this.databaseConnector.database.all('select' +
+            ' mv.id as modelVersionId' +
+            ' mv.modelId,' +
+            ' mv.productionStart,' +
+            ' mv.productionEnd,' +
+            ' mv.engineCapacity,' +
+            ' mv.power,' +
+            ' bt.id as bodyTypeId,' +
+            ' bt.name as bodyTypeName,' +
+            ' ft.id as fuelTypeId,' +
+            ' ft.name as fuelTypeName' +
+            ' from modelVersion mv' +
+            ' left join bodyType bt on mv.bodyTypeId = bt.id' +
+            ' left join fuelType ft on mv.fuelTypeId = ft.id where mv.modelId = ?', [parseInt(modelId)], (err, rows) => {
             if (err) {
                 console.error('Error fetching model versions:', err)
                 response.status(500).send('Error fetching model versions')
