@@ -1,8 +1,32 @@
-<h2><%= brand.name %></h2>
-<div id="brand_info">
-</div>
-<ul id="models_list">
-    <% for (const model of models) { %>
-        <li><a href="/wiki/model/<%= model.id %>"><%= model.name %></a></li>
+<div id="wiki_view">
+    <div class="wiki_view_infos">
+        <h2><%= brand.name %></h2>
+        <div id="brand_info">
+        </div>
+        <ul id="models_list">
+            <% for (const model of models) { %>
+                <li>
+                    <a href="/wiki/model/<%= model.id %>"><%= model.name %></a>
+                    <% if (session.user && session.user.permissionLevel === 0) { %>
+                        <a href="/adminpanel/wiki/models/delete/<%= model.id %>" class="delete_button">X</a>
+                    <% } %>
+                </li>
+            <% } %>
+        </ul>
+    </div>
+    <% if (session.user && session.user.permissionLevel === 0) { %>
+        <div class="wiki_view_adminpanel">
+            <h4>Dodaj model</h4>
+            <form id="add_model_form" action="/adminpanel/wiki/models/add" method="post">
+                <div>
+                    <label for="model_name">Nazwa</label>
+                    <input id="model_name" name="model_name" type="text" placeholder="Multipla, Testarossa, Focus..."
+                           required>
+                </div>
+                <input type="hidden" name="brand_id" value="<%= brand.id %>">
+                <input type="hidden" name="token" value="token">
+                <button type="submit">Dodaj</button>
+            </form>
+        </div>
     <% } %>
-</ul>
+</div>
