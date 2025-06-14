@@ -285,10 +285,136 @@ app.get('/account', (request, response) => {
         return
     }
 
-    response.render('index', {
-        language: 'pl',
-        page: 'account',
-        session: request.session
+    fetchData(`${apiUrl}favoriteCars/${request.session.user.id}`).then(favoriteCars => {
+        response.render('index', {
+            language: 'pl',
+            page: 'account',
+            favoriteCars: favoriteCars,
+            session: request.session
+        })
+    }).catch(error => {
+        console.error('Error fetching favorite cars:', error)
+        response.status(500).send('Error fetching favorite cars')
+    })
+})
+
+app.post('/account/edit/username', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData(`${apiUrl}edit_username`, request.body)
+    postDataResult.then(_ => {
+        response.redirect('/account')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/account/edit/password', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData(`${apiUrl}edit_password`, request.body)
+    postDataResult.then(_ => {
+        response.redirect('/account')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/account/edit/email', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData(`${apiUrl}edit_email`, request.body)
+    postDataResult.then(_ => {
+        response.redirect('/account')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/account/edit/name', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData(`${apiUrl}edit_name`, request.body)
+    postDataResult.then(_ => {
+        response.redirect('/account')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/account/edit/surname', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData(`${apiUrl}edit_surname`, request.body)
+    postDataResult.then(_ => {
+        response.redirect('/account')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/account/edit/age', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData(`${apiUrl}edit_age`, request.body)
+    postDataResult.then(_ => {
+        response.redirect('/account')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/account/edit/phoneNumber', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData(`${apiUrl}edit_phoneNumber`, request.body)
+    postDataResult.then(_ => {
+        response.redirect('/account')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/account/edit/address', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData(`${apiUrl}edit_address`, request.body)
+    postDataResult.then(_ => {
+        response.redirect('/account')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
     })
 })
 
@@ -422,6 +548,10 @@ app.get('/api/offer/:offerId', (request, response) => {
     api.getOffer(request, response)
 })
 
+app.get('/api/favoriteCars/:userId', (request, response) => {
+    api.getFavoriteCars(request, response)
+})
+
 app.post('/api/signin', (request, response) => {
     api.signIn(request, response)
 })
@@ -444,6 +574,10 @@ app.post('/api/add_model_version', (request, response) => {
 
 app.post('/api/add_offer', (request, response) => {
     api.addOffer(request, response)
+})
+
+app.post('/api/edit_username', (request, response) => {
+    api.editUsername(request, response)
 })
 
 app.delete('/api/delete_brand', (request, response) => {

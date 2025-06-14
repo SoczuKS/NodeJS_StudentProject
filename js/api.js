@@ -336,6 +336,12 @@ export default class API {
                     user: {
                         id: user.id,
                         username: user.username,
+                        name: user.name,
+                        surname: user.surname,
+                        phoneNumber: user.phoneNumber,
+                        email: user.email,
+                        age: user.age,
+                        address: user.address,
                         permissionLevel: user.permissionLevel
                     },
                     token: request.session.id
@@ -585,7 +591,7 @@ export default class API {
         }
 
         this.databaseConnector.database.all(
-            'select fc.id as favoriteCarId, m.id as modelId, m.name as modelName, b.name as brandName from favoriteCar as fc join model as m on fc.modelId = m.id join brand as b on m.brandId = b.id where fc.userId = ?',
+            'select m.id as modelId, m.name as modelName, b.name as brandName from favoriteCar as fc join model as m on fc.modelId = m.id join brand as b on m.brandId = b.id where fc.userId = ?',
             [parseInt(userId)],
             (err, rows) => {
                 if (err) {

@@ -1,3 +1,43 @@
 <div id="account_view">
+    <h2>Moje konto</h2>
+    <div class="account_info">
+        <p><strong>Imię:</strong> <%= session.user.name %></p>
+        <p><strong>Nazwisko:</strong> <%= session.user.surname %></p>
+        <p><strong>Wiek:</strong> <%= session.user.age %></p>
+        <form action="/account/edit/username" method="post">
+            <label for="username"><strong>Nazwa użytkownika:</strong></label>
+            <input type="text" id="username" name="username" value="<%= session.user.username %>" required>
+            <button type="submit">Zmień</button>
+        </form>
+        <form action="/account/edit/password" method="post">
+            <label for="password"><strong>Hasło:</strong></label>
+            <input type="password" id="password" name="password" minlength="5" required>
+            <button type="submit">Zmień</button>
+        </form>
+        <form action="/account/edit/email" method="post">
+            <label for="email"><strong>Email:</strong></label>
+            <input type="email" id="email" name="email" value="<%= session.user.email %>" required>
+            <button type="submit">Potwierdź</button>
+        </form>
+        <form action="/account/edit/phone" method="post">
+            <label for="phoneNumber"><strong>Numer telefonu:</strong></label>
+            <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= session.user.phoneNumber %>" required>
+            <button type="submit">Zmień</button>
+        </form>
+        <form action="/account/edit/address" method="post">
+            <label for="address"><strong>Adres:</strong></label>
+            <input type="text" id="address" name="address" value="<%= session.user.address %>" required>
+            <button type="submit">Zmień</button>
+        </form>
+        <p><strong>Poziom uprawnień:</strong> <%= session.user.permissionLevel === 0 ? 'Administrator' : 'Użytkownik' %></p>
+    </div>
+    <% if (favoriteCars && favoriteCars.length > 0) { %>
+    <h3>Ulubione auta</h3>
+    <ul id="favorite_cars">
+        <% for (const favoriteCar of favoriteCars) { %>
+            <li><%= favoriteCar.brandName %> <%= favoriteCar.modelName %></li>
+        <% } %>
+    </ul>
+    <% } %>
 
 </div>
