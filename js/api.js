@@ -606,7 +606,7 @@ export default class API {
                 response.json({success: false})
                 return
             }
-            console.log(row)
+
             response.json(row)
         })
     }
