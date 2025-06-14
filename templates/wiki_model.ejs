@@ -1,7 +1,9 @@
 <div id="wiki_view">
     <div class="wiki_view_info">
         <h2><%= model.brand.name %> <%= model.name %></h2>
-        <p><%= model.description %></p>
+        <div id="model_description">
+            <p><%= model.description %></p>
+        </div>
         <% if (model.modelVersions && model.modelVersions.length > 0) { %>
             <table id="model_versions_table">
                 <thead>

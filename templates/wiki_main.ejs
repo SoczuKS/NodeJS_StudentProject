@@ -1,10 +1,5 @@
 <div id="wiki_view">
     <div class="wiki_view_info">
-        <div id="brand_info">
-            <div class="brand_description">
-                <p><%= brand.description %></p>
-            </div>
-        </div>
         <ul id="brands_list">
             <% for (const brand of brands) { %>
                 <li>
@@ -280,7 +275,8 @@
                 </div>
                 <div>
                     <label for="brand_description">Opis</label>
-                    <textarea id="brand_description" name="brand_description" rows="8" placeholder="Opis marki, jej historia, ciekawostki..."></textarea>
+                    <textarea id="brand_description" name="brand_description" rows="8"
+                              placeholder="Opis marki, jej historia, ciekawostki..."></textarea>
                 </div>
                 <input type="hidden" name="token" value="token">
                 <button type="submit">Dodaj</button>
