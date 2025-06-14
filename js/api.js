@@ -92,7 +92,7 @@ export default class API {
             return
         }
 
-        this.databaseConnector.database.run('delete from brand where id = ?', [id], (err, rows) => {
+        this.databaseConnector.database.run('delete from brand where id = ?', [id], (err) => {
             if (err) {
                 console.error('Error deleting brand:', err)
                 response.json({success: false})
@@ -448,6 +448,69 @@ export default class API {
                 }
             )
         })
+    }
+
+    updateAddress(request, response) {
+        const {userId, newAddress} = request.body
+
+        if (!userId || !newAddress) {
+            console.error('User ID and new address are required for address update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update user set address = ? where id = ?', [newAddress, parseInt(userId)], (err) => {
+                if (err) {
+                    console.error('Error updating address:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
+    updateEmail(request, response) {
+        const {userId, newEmailAddress} = request.body
+
+        if (!userId || !newEmailAddress) {
+            console.error('User ID and new email are required for email update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update user set email = ? where id = ?', [newEmailAddress, parseInt(userId)], (err) => {
+                if (err) {
+                    console.error('Error updating email:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
+    updatePhoneNumber(request, response) {
+        const {userId, newPhoneNumber} = request.body
+
+        if (!userId || !newPhoneNumber) {
+            console.error('User ID and new phone number are required for phone number update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update user set phoneNumber = ? where id = ?', [newPhoneNumber, parseInt(userId)], (err) => {
+                if (err) {
+                    console.error('Error updating phone number:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
     }
 
     updatePermissionLevel(request, response) {
