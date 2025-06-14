@@ -226,15 +226,26 @@ app.get('/adminpanel/users', (request, response) => {
         return
     }
 
-    response.render('index', {
-        language: 'pl',
-        page: 'adminpanel',
-        subpage: 'adminpanel_users',
-        session: request.session
+    fetchData(`${apiUrl}users`).then(users => {
+        response.render('index', {
+            language: 'pl',
+            page: 'adminpanel',
+            subpage: 'adminpanel_users',
+            session: request.session,
+            users: users
+        })
+    }).catch(error => {
+        console.error('Error fetching users users:', error)
+        response.status(500).send('Error fetching users')
     })
 })
 
 app.post('/adminpanel/wiki/brands/add', (request, response) => {
+    if (!request.session || !request.session.user || request.session.user.permissionLevel !== 0) {
+        response.redirect('/')
+        return
+    }
+
     const postDataResult = postData('http://localhost:3000/api/add_brand', request.body)
     postDataResult.then(_ => {
         response.redirect('/wiki')
@@ -245,6 +256,11 @@ app.post('/adminpanel/wiki/brands/add', (request, response) => {
 })
 
 app.post('/adminpanel/wiki/models/add', (request, response) => {
+    if (!request.session || !request.session.user || request.session.user.permissionLevel !== 0) {
+        response.redirect('/')
+        return
+    }
+
     const postDataResult = postData('http://localhost:3000/api/add_model', request.body)
     postDataResult.then(_ => {
         response.redirect(`/wiki/brand/${request.body.brand_id}`)
@@ -255,6 +271,11 @@ app.post('/adminpanel/wiki/models/add', (request, response) => {
 })
 
 app.post('/adminpanel/wiki/model_versions/add', (request, response) => {
+    if (!request.session || !request.session.user || request.session.user.permissionLevel !== 0) {
+        response.redirect('/')
+        return
+    }
+
     const postDataResult = postData('http://localhost:3000/api/add_model_version', request.body)
     postDataResult.then(_ => {
         response.redirect(`/wiki/model/${request.body.model_id}`)
@@ -322,6 +343,10 @@ app.get('/api/body_types', (request, response) => {
     api.getBodyTypes(request, response)
 })
 
+app.get('/api/users', (request, response) => {
+    api.getUsers(request, response)
+})
+
 app.post('/api/signin', (request, response) => {
     api.signIn(request, response)
 })
@@ -352,6 +377,10 @@ app.delete('/api/delete_model', (request, response) => {
 
 app.delete('/api/delete_model_version', (request, response) => {
     api.deleteModelVersion(request, response)
+})
+
+app.delete('/api/delete_user', (request, response) => {
+    api.deleteUser(request, response)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

@@ -305,4 +305,36 @@ export default class API {
                 })
         })
     }
+
+    getUsers(request, response) {
+        this.databaseConnector.database.all('select id, username, name, surname, phoneNumber, email, permissionLevel from user', [], (err, rows) => {
+            if (err) {
+                console.error('Error fetching users:', err)
+                response.json({success: false})
+                return
+            }
+
+            response.json(rows)
+        })
+    }
+
+    deleteUser(request, response) {
+        const {id} = request.body
+
+        if (!id) {
+            console.error('User ID is required for deletion')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run('delete from user where id = ?', [parseInt(id)], (err) => {
+            if (err) {
+                console.error('Error deleting user:', err)
+                response.json({success: false})
+                return
+            }
+
+            response.json({success: true})
+        })
+    }
 }

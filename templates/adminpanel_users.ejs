@@ -1,1 +1,43 @@
-<h2 style="text-align: center">Strona w budowie</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Nazwa użytkownika</th>
+        <th>E-mail</th>
+        <th>Imię</th>
+        <th>Nazwisko</th>
+        <th>Wiek</th>
+        <th>Numer telefonu</th>
+        <th>Adres</th>
+        <th>Poziom uprawnień</th>
+        <% if (session.user && session.user.permissionLevel === 0) { %>
+            <th>&nbsp;</th>
+        <% } %>
+    </tr>
+    </thead>
+    <tbody>
+    <% for (const user of users) { %>
+        <tr>
+            <td><%= user.username %></td>
+            <td><%= user.email %></td>
+            <td><%= user.name %></td>
+            <td><%= user.surname %></td>
+            <td><%= user.age || 'Nie podano' %></td>
+            <td><%= user.phoneNumber %></td>
+            <td><%= user.address || 'Nie podano' %></td>
+            <td>
+                <% if (user.permissionLevel === 0) { %>
+                    Administrator
+                <% } else if (user.permissionLevel === 1) { %>
+                    Użytkownik
+                <% } else { %>
+                    Nieznany poziom
+                <% } %>
+                <% if (session.user && session.user.permissionLevel === 0) { %>
+            <td>
+                <button class="delete_button delete_user_button" data-user-id="<%= user.id %>">Usuń</button>
+            </td>
+            <% } %>
+        </tr>
+    <% } %>
+    </tbody>
+</table>

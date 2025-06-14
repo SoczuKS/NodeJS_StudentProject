@@ -1,36 +1,42 @@
 <div id="wiki_view">
     <div class="wiki_view_info">
         <h2><%= model.brand.name %> <%= model.name %></h2>
-        <table id="model_versions_table">
-            <thead>
-            <tr>
-                <th>Typ nadwozia</th>
-                <th>Produkcja od</th>
-                <th>Produkcja do</th>
-                <th>Pojemność silnika</th>
-                <th>Moc silnika</th>
-                <th>Rodzaj paliwa</th>
-                <th>&nbsp;</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% for (const version of model.modelVersions) { %>
+        <% if (model.modelVersions && model.modelVersions.length > 0) { %>
+            <table id="model_versions_table">
+                <thead>
                 <tr>
-                    <td><%= version.bodyType %></td>
-                    <td><%= version.productionStart %></td>
-                    <td><%= version.productionEnd || 'obecnie' %></td>
-                    <td><%= version.engineCapacity %> L</td>
-                    <td><%= version.power %> KM</td>
-                    <td><%= version.fuelType %></td>
-                    <td>
-                        <% if (session.user && session.user.permissionLevel === 0) { %>
-                            <button class="delete_button delete_model_version_button" data-model-version-id="<%= version.modelVersionId %>">Usuń</button>
-                        <% } %>
-                    </td>
+                    <th>Typ nadwozia</th>
+                    <th>Produkcja od</th>
+                    <th>Produkcja do</th>
+                    <th>Pojemność silnika</th>
+                    <th>Moc silnika</th>
+                    <th>Rodzaj paliwa</th>
+                    <% if (session.user && session.user.permissionLevel === 0) { %>
+                        <th>&nbsp;</th>
+                    <% } %>
                 </tr>
-            <% } %>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                <% for (const version of model.modelVersions) { %>
+                    <tr>
+                        <td><%= version.bodyType %></td>
+                        <td><%= version.productionStart %></td>
+                        <td><%= version.productionEnd || 'obecnie' %></td>
+                        <td><%= version.engineCapacity %> L</td>
+                        <td><%= version.power %> KM</td>
+                        <td><%= version.fuelType %></td>
+                        <% if (session.user && session.user.permissionLevel === 0) { %>
+                            <td>
+                                <button class="delete_button delete_model_version_button"
+                                        data-model-version-id="<%= version.modelVersionId %>">Usuń
+                                </button>
+                            </td>
+                        <% } %>
+                    </tr>
+                <% } %>
+                </tbody>
+            </table>
+        <% } %>
     </div>
     <% if (session.user && session.user.permissionLevel === 0) { %>
         <div class="wiki_view_adminpanel">

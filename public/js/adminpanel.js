@@ -6,6 +6,7 @@ function onLoad() {
     setDeleteBrandButtons()
     setDeleteModelButtons()
     setDeleteModelVersionButtons()
+    setDeleteUserButtons()
 }
 
 function setDeleteBrandButtons() {
@@ -17,7 +18,7 @@ function setDeleteBrandButtons() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: event.target.dataset.brandId })
+                body: JSON.stringify({id: event.target.dataset.brandId})
             })
             if (!response.ok) {
                 console.error("Failed to delete brand")
@@ -37,7 +38,7 @@ function setDeleteModelButtons() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: event.target.dataset.modelId })
+                body: JSON.stringify({id: event.target.dataset.modelId})
             })
             if (!response.ok) {
                 console.error("Failed to delete model")
@@ -58,10 +59,30 @@ function setDeleteModelVersionButtons() {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ id: event.target.dataset.modelVersionId })
+                body: JSON.stringify({id: event.target.dataset.modelVersionId})
             })
             if (!response.ok) {
                 console.error("Failed to delete model version")
+                return
+            }
+            window.location.reload()
+        })
+    })
+}
+
+function setDeleteUserButtons() {
+    const deleteUserButtons = document.querySelectorAll('.delete_user_button')
+    deleteUserButtons.forEach(button => {
+        button.addEventListener('click', async (event) => {
+            const response = await fetch('/api/delete_user', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({id: event.target.dataset.userId})
+            })
+            if (!response.ok) {
+                console.error("Failed to delete user")
                 return
             }
             window.location.reload()

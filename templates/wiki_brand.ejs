@@ -3,16 +3,19 @@
         <h2><%= brand.name %></h2>
         <div id="brand_info">
         </div>
-        <ul id="models_list">
-            <% for (const model of models) { %>
-                <li>
-                    <a href="/wiki/model/<%= model.id %>"><%= model.name %></a>
-                    <% if (session.user && session.user.permissionLevel === 0) { %>
-                        <button class="delete_button delete_model_button" data-model-id="<%= model.id %>">Usuń</button>
-                    <% } %>
-                </li>
-            <% } %>
-        </ul>
+        <% if (models && models.length > 0) { %>
+            <ul id="models_list">
+                <% for (const model of models) { %>
+                    <li>
+                        <a href="/wiki/model/<%= model.id %>"><%= model.name %></a>
+                        <% if (session.user && session.user.permissionLevel === 0) { %>
+                            <button class="delete_button delete_model_button" data-model-id="<%= model.id %>">Usuń
+                            </button>
+                        <% } %>
+                    </li>
+                <% } %>
+            </ul>
+        <% } %>
     </div>
     <% if (session.user && session.user.permissionLevel === 0) { %>
         <div class="wiki_view_adminpanel">
