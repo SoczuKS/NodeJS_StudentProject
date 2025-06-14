@@ -1,1 +1,76 @@
-<h2><%= model.brand.name %> <%= model.name %></h2>
+<div id="wiki_view">
+    <div class="wiki_view_info">
+        <h2><%= model.brand.name %> <%= model.name %></h2>
+        <table id="model_versions_table">
+            <thead>
+            <tr>
+                <th>Typ nadwozia</th>
+                <th>Produkcja od</th>
+                <th>Produkcja do</th>
+                <th>Pojemność silnika</th>
+                <th>Moc silnika</th>
+                <th>Rodzaj paliwa</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            <% for (const version of model.modelVersions) { %>
+                <tr>
+                    <td><%= version.bodyType %></td>
+                    <td><%= version.productionStart %></td>
+                    <td><%= version.productionEnd || 'obecnie' %></td>
+                    <td><%= version.engineCapacity %> L</td>
+                    <td><%= version.power %> KM</td>
+                    <td><%= version.fuelType %></td>
+                    <td>
+                        <% if (session.user && session.user.permissionLevel === 0) { %>
+                            <a href="/adminpanel/wiki/model_versions/delete/<%= version.id %>" class="delete_button">X</a>
+                        <% } %>
+                    </td>
+                </tr>
+            <% } %>
+            </tbody>
+        </table>
+    </div>
+    <% if (session.user && session.user.permissionLevel === 0) { %>
+        <div class="wiki_view_adminpanel">
+            <h4>Dodaj wersję modelową</h4>
+            <form id="add_model_version_form" action="/adminpanel/wiki/model_versions/add" method="post">
+                <div>
+                    <label for="body_type">Typ nadwozia</label>
+                    <select id="body_type" name="body_type" required>
+                        <% for (const bodyType of bodyTypes) { %>
+                            <option value="<%= bodyType.id %>"><%= bodyType.name %></option>
+                        <% } %>
+                    </select>
+                </div>
+                <div>
+                    <label for="production_start">Produkcja od</label>
+                    <input id="production_start" name="production_start" type="number" min="1900" max="2025" required>
+                </div>
+                <div>
+                    <label for="production_end">Produkcja do</label>
+                    <input id="production_end" name="production_end" type="number" min="1900" max="2025">
+                </div>
+                <div>
+                    <label for="engine_capacity">Pojemność silnika (l)</label>
+                    <input id="engine_capacity" name="engine_capacity" type="number" step="0.001">
+                </div>
+                <div>
+                    <label for="power">Moc silnika (KM)</label>
+                    <input id="power" name="power" type="number" required>
+                </div>
+                <div>
+                    <label for="fuel_type">Rodzaj paliwa</label>
+                    <select id="fuel_type" name="fuel_type" required>
+                        <% for (const fuelType of fuelTypes) { %>
+                            <option value="<%= fuelType.id %>"><%= fuelType.name %></option>
+                        <% } %>
+                    </select>
+                </div>
+                <input type="hidden" name="model_id" value="<%= model.id %>">
+                <input type="hidden" name="token" value="tokens">
+                <button type="submit">Dodaj</button>
+        </div>
+    <% } %>
+</div>

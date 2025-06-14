@@ -15,7 +15,7 @@ export default class API {
         this.databaseConnector.database.all('select * from brand order by name', [], (err, rows) => {
             if (err) {
                 console.error('Error fetching brands:', err)
-                response.status(500).send('Error fetching brands')
+                response.json({success: false})
                 return
             }
 
@@ -26,15 +26,15 @@ export default class API {
     getBrand(request, response) {
         const {brandId} = request.params
         if (!brandId) {
-            console.error(`Error fetching brand: ${brandId}`)
-            response.status(400).send('Brand ID is required')
+            console.error(`Brand ID is not provided`)
+            response.json({success: false})
             return
         }
 
         this.databaseConnector.database.get('select * from brand where id = ?', [parseInt(brandId)], (err, row) => {
             if (err) {
                 console.error('Error fetching brand:', err)
-                response.status(500).send('Error fetching brand')
+                response.json({success: false})
                 return
             }
 
@@ -45,15 +45,16 @@ export default class API {
     addBrand(request, response) {
         const {brand_name, brand_country} = request.body
 
-        this.databaseConnector.database.run('insert into brand (name, country) values (?, ?)', [brand_name, brand_country], (err, rows) => {
+        if (!brand_name || !brand_country) {
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run('insert into brand (name, country) values (?, ?)', [brand_name, brand_country], (err) => {
             if (err) {
                 console.error('Error adding brand:', err)
-                response.status(500).send('Error adding brand')
-                return
-            }
-
-            if(!brand_name || !brand_country){
                 response.json({success: false})
+                return
             }
 
             response.json({success: true})
@@ -63,14 +64,17 @@ export default class API {
     deleteBrand(request, response) {
         const {id} = request.params
 
+        if (!id) {
+            console.error('Brand ID is required for deletion')
+            response.json({success: false})
+            return
+        }
+
         this.databaseConnector.database.run('delete from brand where id = ?', [id], (err, rows) => {
             if (err) {
                 console.error('Error deleting brand:', err)
-                response.status(500).send('Error deleting brand')
-            }
-
-            if(!id){
                 response.json({success: false})
+                return
             }
 
             response.json({success: true})
@@ -80,14 +84,15 @@ export default class API {
     getModels(request, response) {
         const {brandId} = request.params
         if (!brandId) {
-            response.status(400).send('Brand ID is required')
+            console.error('Brand ID is required')
+            response.json({success: false})
             return
         }
 
         this.databaseConnector.database.all('select * from model where brandId = ? order by name', [parseInt(brandId)], (err, rows) => {
             if (err) {
                 console.error('Error fetching models:', err)
-                response.status(500).send('Error fetching models')
+                response.json({success: false})
                 return
             }
             response.json(rows)
@@ -97,14 +102,15 @@ export default class API {
     getModel(request, response) {
         const {modelId} = request.params
         if (!modelId) {
-            response.status(400).send('Model ID is required')
+            console.error('Model ID is required')
+            response.json({success: false})
             return
         }
 
         this.databaseConnector.database.get('select * from model where id = ?', [parseInt(modelId)], (err, row) => {
             if (err) {
                 console.error('Error fetching model:', err)
-                response.status(500).send('Error fetching model')
+                response.json({success: false})
                 return
             }
 
@@ -112,30 +118,104 @@ export default class API {
         })
     }
 
-    getModelVersions(request, response) {
-        const {modelId} = request.params
-        if (!modelId) {
-            response.status(400).send('Model ID is required')
+    addModel(request, response) {
+        const {model_name, brand_id} = request.body
+
+        if (!model_name || !brand_id) {
+            response.status(400).send('Model name and brand ID are required')
             return
         }
 
-        this.databaseConnector.database.all('select' +
-            ' mv.id as modelVersionId' +
-            ' mv.modelId,' +
-            ' mv.productionStart,' +
-            ' mv.productionEnd,' +
-            ' mv.engineCapacity,' +
-            ' mv.power,' +
-            ' bt.id as bodyTypeId,' +
-            ' bt.name as bodyTypeName,' +
-            ' ft.id as fuelTypeId,' +
-            ' ft.name as fuelTypeName' +
-            ' from modelVersion mv' +
-            ' left join bodyType bt on mv.bodyTypeId = bt.id' +
-            ' left join fuelType ft on mv.fuelTypeId = ft.id where mv.modelId = ?', [parseInt(modelId)], (err, rows) => {
+        this.databaseConnector.database.run('insert into model (name, brandId) values (?, ?)', [model_name, parseInt(brand_id)], (err) => {
+            if (err) {
+                console.error('Error adding model:', err)
+                response.json({success: false})
+                return
+            }
+
+            response.json({success: true})
+        })
+    }
+
+    deleteModel(request, response) {
+        const {id} = request.params
+
+        if (!id) {
+            console.error('Model ID is required for deletion')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run('delete from model where id = ?', [parseInt(id)], (err) => {
+            if (err) {
+                console.error('Error deleting model:', err)
+                response.json({success: false})
+                return
+            }
+
+            response.json({success: true})
+        })
+    }
+
+    getModelVersions(request, response) {
+        const {modelId} = request.params
+        if (!modelId) {
+            console.error('Model ID is required')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.all('select mv.id as modelVersionId, mv.modelId, mv.productionStart, mv.productionEnd, mv.engineCapacity, mv.power, bt.name as bodyType, ft.name as fuelType from modelVersion as mv left join bodyType bt on mv.bodyTypeId = bt.id left join fuelType ft on mv.fuelTypeId = ft.id where mv.modelId = ?', [parseInt(modelId)], (err, rows) => {
             if (err) {
                 console.error('Error fetching model versions:', err)
-                response.status(500).send('Error fetching model versions')
+                response.json({success: false})
+                return
+            }
+
+            response.json(rows)
+        })
+    }
+
+    addModelVersion(request, response) {
+        const {model_id, body_type, production_start, production_end, engine_capacity, power, fuel_type} = request.body
+
+        if (!model_id || !body_type || !production_start || !power || !fuel_type) {
+            console.error('Model ID, body type ID, production start date, power and fuel type ID are required')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'insert into modelVersion (modelId, bodyTypeId, productionStart, productionEnd, engineCapacity, power, fuelTypeId) values (?, ?, ?, ?, ?, ?, ?)',
+            [parseInt(model_id), parseInt(body_type), production_start, production_end || null, engine_capacity || null, parseInt(power), parseInt(fuel_type)],
+            (err) => {
+                if (err) {
+                    console.error('Error adding model version:', err)
+                    response.json({success: false})
+                    return
+                }
+
+                response.json({success: true})
+            })
+    }
+
+    getFuelTypes(request, response) {
+        this.databaseConnector.database.all('select * from fuelType', [], (err, rows) => {
+            if (err) {
+                console.error('Error fetching fuel types:', err)
+                response.json({success: false})
+                return
+            }
+
+            response.json(rows)
+        })
+    }
+
+    getBodyTypes(request, response) {
+        this.databaseConnector.database.all('select * from bodyType', [], (err, rows) => {
+            if (err) {
+                console.error('Error fetching body types:', err)
+                response.json({success: false})
                 return
             }
 
@@ -149,8 +229,8 @@ export default class API {
         const query = 'select * from user where username = ?'
         this.databaseConnector.database.get(query, [username], (err, user) => {
             if (err) {
-                console.error(err)
-                response.status(500).send('Error fetching user')
+                console.error('Error fetching user:', err)
+                response.json({success: false})
                 return
             }
 
@@ -179,10 +259,16 @@ export default class API {
     signUp(request, response) {
         const {username, password, firstname, lastname, phone, email} = request.body
 
+        if (!username || !password || !firstname || !lastname || !phone || !email) {
+            console.error('All fields are required for signup')
+            response.json({success: false})
+            return
+        }
+
         bcrypt.hash(password, 5, (err, hashedPassword) => {
             if (err) {
                 console.error('Error hashing password:', err)
-                response.status(500).send('Error hashing password')
+                response.json({success: false})
                 return
             }
 
@@ -192,7 +278,7 @@ export default class API {
                 (err) => {
                     if (err) {
                         console.error('Error inserting user:', err)
-                        response.status(500).send('Error fetching user')
+                        response.json({success: false})
                         return
                     }
                     response.json({success: true})

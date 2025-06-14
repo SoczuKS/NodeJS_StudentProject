@@ -69,7 +69,8 @@ app.get('/wiki', (request, response) => {
             brands: brands,
             session: request.session
         })
-    }).catch(_ => {
+    }).catch(err => {
+        console.error(err)
         response.redirect('/')
     })
 })
@@ -91,10 +92,12 @@ app.get('/wiki/brand/:brandId', (request, response) => {
                 session: request.session,
                 models: models
             })
-        }).catch(_ => {
+        }).catch(err => {
+            console.error(err)
             response.redirect('/')
         })
-    }).catch(_ => {
+    }).catch(err => {
+        console.error(err)
         response.redirect('/')
     })
 })
@@ -107,19 +110,67 @@ app.get('/wiki/model/:modelId', (request, response) => {
     }
 
     fetchData(`${apiUrl}model/${modelId}`).then(model => {
-        fetchData(`${apiUrl}brand/${model.brandId}`).then(brand => {
-            model.brand = brand
-
+        const totalToFetch = 4
+        let fetchedCount = 0
+        let fuelTypes = []
+        let bodyTypes = []
+        const render = () => {
             response.render('index', {
                 language: 'pl',
                 page: 'wiki',
                 subpage: 'wiki_model',
                 model: model,
-                session: request.session
+                session: request.session,
+                fuelTypes: fuelTypes,
+                bodyTypes: bodyTypes
             })
+        }
+        fetchData(`${apiUrl}brand/${model.brandId}`).then(brand => {
+            fetchedCount += 1
+            model.brand = brand
+
+            if (fetchedCount === totalToFetch) {
+                render()
+            }
         }).catch(error => {
             console.error('Error fetching brand:', error)
             response.status(500).send('Error fetching brand')
+        })
+
+        fetchData(`${apiUrl}model_versions/${model.id}`).then(modelVersions => {
+            fetchedCount += 1
+            model.modelVersions = modelVersions
+
+            if (fetchedCount === totalToFetch) {
+                render()
+            }
+        }).catch(error => {
+            console.error('Error fetching model versions:', error)
+            response.status(500).send('Error fetching model versions')
+        })
+
+        fetchData(`${apiUrl}fuel_types`).then(fetchedFuelTypes => {
+            fetchedCount += 1
+            fuelTypes = fetchedFuelTypes
+
+            if (fetchedCount === totalToFetch) {
+                render()
+            }
+        }).catch(error => {
+            console.error('Error fetching fuel types:', error)
+            response.status(500).send('Error fetching fuel types')
+        })
+
+        fetchData(`${apiUrl}body_types`).then(fetchedBodyTypes => {
+            fetchedCount += 1
+            bodyTypes = fetchedBodyTypes
+
+            if (fetchedCount === totalToFetch) {
+                render()
+            }
+        }).catch(error => {
+            console.error('Error fetching body types:', error)
+            response.status(500).send('Error fetching body types')
         })
     }).catch(error => {
         console.error('Error fetching model:', error)
@@ -133,6 +184,13 @@ app.get('/signup', (request, response) => {
 
 app.get('/signin', (request, response) => {
     response.render('index', {language: 'pl', page: 'signin', session: request.session})
+})
+
+app.get('/signout', (request, response) => {
+    if (request.session && request.session.user) {
+        delete request.session.user
+    }
+    response.redirect('/')
 })
 
 app.get('/marketplace', (request, response) => {
@@ -158,11 +216,32 @@ app.get('/adminpanel/users', (request, response) => {
 })
 
 app.post('/adminpanel/wiki/brands/add', (request, response) => {
-    const postDataResult = postData('http://localhost:3000/api/addBrand', request.body)
+    const postDataResult = postData('http://localhost:3000/api/add_brand', request.body)
     postDataResult.then(_ => {
         response.redirect('/wiki')
-    }).catch(_ => {
-        response.redirect('/wiki')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/adminpanel/wiki/models/add', (request, response) => {
+    const postDataResult = postData('http://localhost:3000/api/add_model', request.body)
+    postDataResult.then(_ => {
+        response.redirect(`/wiki/brand/${request.body.brand_id}`)
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.post('/adminpanel/wiki/model_versions/add', (request, response) => {
+    const postDataResult = postData('http://localhost:3000/api/add_model_version', request.body)
+    postDataResult.then(_ => {
+        response.redirect(`/wiki/model/${request.body.model_id}`)
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
     })
 })
 
@@ -170,7 +249,8 @@ app.post('/signup', (request, response) => {
     const postDataResult = postData('http://localhost:3000/api/signup', request.body)
     postDataResult.then(_ => {
         response.redirect('/')
-    }).catch(_ => {
+    }).catch(err => {
+        console.error(err)
         response.redirect('/')
     })
 })
@@ -178,7 +258,6 @@ app.post('/signup', (request, response) => {
 app.post('/signin', (request, response) => {
     const postDataResult = postData('http://localhost:3000/api/signin', request.body)
     postDataResult.then(data => {
-        console.log('Received signin data:', data)
         if (data.success === true) {
             request.session.user = data.user
             response.session = request.session
@@ -186,7 +265,8 @@ app.post('/signin', (request, response) => {
         } else {
             response.redirect('/signin')
         }
-    }).catch(_ => {
+    }).catch(err => {
+        console.error(err)
         response.redirect('/')
     })
 })
@@ -211,6 +291,18 @@ app.get('/api/model/:modelId', (request, response) => {
     api.getModel(request, response)
 })
 
+app.get('/api/model_versions/:modelId', (request, response) => {
+    api.getModelVersions(request, response)
+})
+
+app.get('/api/fuel_types', (request, response) => {
+    api.getFuelTypes(request, response)
+})
+
+app.get('/api/body_types', (request, response) => {
+    api.getBodyTypes(request, response)
+})
+
 app.post('/api/signin', (request, response) => {
     api.signIn(request, response)
 })
@@ -219,8 +311,16 @@ app.post('/api/signup', (request, response) => {
     api.signUp(request, response)
 })
 
-app.post('/api/addBrand', (request, response) => {
+app.post('/api/add_brand', (request, response) => {
     api.addBrand(request, response)
+})
+
+app.post('/api/add_model', (request, response) => {
+    api.addModel(request, response)
+})
+
+app.post('/api/add_model_version', (request, response) => {
+    api.addModelVersion(request, response)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

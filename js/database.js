@@ -42,40 +42,40 @@ export default class DatabaseConnector {
             create table brand
             (
                 id      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                name    varchar(28) NOT NULL UNIQUE,
-                country varchar(20) NOT NULL
+                name    varchar(28)                       NOT NULL UNIQUE,
+                country varchar(20)                       NOT NULL
             );
 
             create table model
             (
                 id      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                name    varchar(20) NOT NULL UNIQUE,
-                brandId int         NOT NULL,
+                name    varchar(20)                       NOT NULL UNIQUE,
+                brandId int                               NOT NULL,
                 FOREIGN KEY (brandId) REFERENCES brand (id)
             );
 
             create table fuelType
             (
                 id   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                name varchar(16) NOT NULL UNIQUE
+                name varchar(16)                       NOT NULL UNIQUE
             );
 
             create table bodyType
             (
                 id   INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                name varchar(16) NOT NULL UNIQUE
+                name varchar(16)                       NOT NULL UNIQUE
             );
 
             create table modelVersion
             (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                modelId         int  NOT NULL,
-                bodyTypeId      int  NOT NULL,
-                productionStart date NOT NULL,
+                modelId         int                               NOT NULL,
+                bodyTypeId      int                               NOT NULL,
+                productionStart date                              NOT NULL,
                 productionEnd   date,
                 engineCapacity  real,
-                power           int  NOT NULL,
-                fuelTypeId      int  NOT NULL,
+                power           int                               NOT NULL,
+                fuelTypeId      int                               NOT NULL,
                 FOREIGN KEY (modelId) REFERENCES model (id),
                 FOREIGN KEY (bodyTypeId) REFERENCES bodyType (id),
                 FOREIGN KEY (fuelTypeId) REFERENCES fuelType (id)
@@ -84,26 +84,26 @@ export default class DatabaseConnector {
             create table user
             (
                 id              INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                username        varchar(26) NOT NULL UNIQUE,
-                password        varchar(30) NOT NULL,
-                name            varchar(20) NOT NULL,
-                surname         varchar(55) NOT NULL,
+                username        varchar(26)                       NOT NULL UNIQUE,
+                password        varchar(30)                       NOT NULL,
+                name            varchar(20)                       NOT NULL,
+                surname         varchar(55)                       NOT NULL,
                 age             int,
-                phoneNumber     varchar(15) NOT NULL UNIQUE,
-                email           varchar(30) NOT NULL UNIQUE,
+                phoneNumber     varchar(15)                       NOT NULL UNIQUE,
+                email           varchar(30)                       NOT NULL UNIQUE,
                 address         varchar(50),
-                permissionLevel int         NOT NULL
+                permissionLevel int                               NOT NULL
             );
 
             create table offer
             (
                 id             INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-                title          varchar(50) NOT NULL,
-                modelVersionId int         NOT NULL,
-                userId         int         NOT NULL,
+                title          varchar(50)                       NOT NULL,
+                modelVersionId int                               NOT NULL,
+                userId         int                               NOT NULL,
                 description    varchar(200),
-                mileage        int         NOT NULL,
-                price          real        NOT NULL,
+                mileage        int                               NOT NULL,
+                price          real                              NOT NULL,
                 FOREIGN KEY (modelVersionId) REFERENCES modelVersion (id),
                 FOREIGN KEY (userId) REFERENCES user (id)
             );
@@ -157,12 +157,12 @@ export default class DatabaseConnector {
                    ('crossover'),
                    ('pickup');
 
-            insert into modelVersion (brandId, modelId, bodyTypeId, productionStart,
-                                      productionEnd, engineCapacity, power, fuelTypeId, productionYear)
-            values (1, 1, 2, '1993-02-01', '2018-06-22', 1.2, 60, 1, 2004),
-                   (3, 3, 6, '1996-12-04', null, 2.0, 150, 2, 2016),
-                   (4, 4, 1, '1966-05-01', null, 1.8, 140, 4, 2020),
-                   (11, 12, 3, '2021-01-01', null, null, 235, 3, 2022);
+            insert into modelVersion (modelId, bodyTypeId, productionStart,
+                                      productionEnd, engineCapacity, power, fuelTypeId)
+            values (1, 2, '1993-02-01', '2018-06-22', 1.2, 60, 1),
+                   (3, 6, '1996-12-04', null, 2.0, 150, 2),
+                   (4, 1, '1966-05-01', null, 1.8, 140, 4),
+                   (12, 3, '2021-01-01', null, null, 235, 3);
         `);
 
         bcrypt.hash('Admin', 5, (err, hashedPassword) => {
