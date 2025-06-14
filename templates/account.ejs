@@ -5,26 +5,31 @@
         <p><strong>Nazwisko:</strong> <%= session.user.surname %></p>
         <p><strong>Wiek:</strong> <%= session.user.age %></p>
         <form action="/account/edit/username" method="post">
+            <input type="hidden" name="user_id" value="<%= session.user.id %>">
             <label for="username"><strong>Nazwa użytkownika:</strong></label>
             <input type="text" id="username" name="username" value="<%= session.user.username %>" required>
             <button type="submit">Zmień</button>
         </form>
         <form action="/account/edit/password" method="post">
+            <input type="hidden" name="user_id" value="<%= session.user.id %>">
             <label for="password"><strong>Hasło:</strong></label>
             <input type="password" id="password" name="password" minlength="5" required>
             <button type="submit">Zmień</button>
         </form>
         <form action="/account/edit/email" method="post">
+            <input type="hidden" name="user_id" value="<%= session.user.id %>">
             <label for="email"><strong>Email:</strong></label>
             <input type="email" id="email" name="email" value="<%= session.user.email %>" required>
-            <button type="submit">Potwierdź</button>
+            <button type="submit">Zmień</button>
         </form>
         <form action="/account/edit/phone" method="post">
-            <label for="phoneNumber"><strong>Numer telefonu:</strong></label>
-            <input type="tel" id="phoneNumber" name="phoneNumber" value="<%= session.user.phoneNumber %>" required>
+            <input type="hidden" name="user_id" value="<%= session.user.id %>">
+            <label for="phone_number"><strong>Numer telefonu:</strong></label>
+            <input type="tel" id="phone_number" name="phone_number" value="<%= session.user.phoneNumber %>" required>
             <button type="submit">Zmień</button>
         </form>
         <form action="/account/edit/address" method="post">
+            <input type="hidden" name="user_id" value="<%= session.user.id %>">
             <label for="address"><strong>Adres:</strong></label>
             <input type="text" id="address" name="address" value="<%= session.user.address %>" required>
             <button type="submit">Zmień</button>

@@ -306,6 +306,9 @@ app.post('/account/edit/username', (request, response) => {
 
     const postDataResult = postData(`${apiUrl}edit_username`, request.body)
     postDataResult.then(_ => {
+        const {username} = request.body
+        request.session.user.username = username
+        response.session = request.session
         response.redirect('/account')
     }).catch(err => {
         console.error(err)
@@ -336,6 +339,9 @@ app.post('/account/edit/email', (request, response) => {
 
     const postDataResult = postData(`${apiUrl}edit_email`, request.body)
     postDataResult.then(_ => {
+        const {email} = request.body
+        request.session.user.email = email
+        response.session = request.session
         response.redirect('/account')
     }).catch(err => {
         console.error(err)
@@ -343,59 +349,17 @@ app.post('/account/edit/email', (request, response) => {
     })
 })
 
-app.post('/account/edit/name', (request, response) => {
+app.post('/account/edit/phone', (request, response) => {
     if (!request.session || !request.session.user) {
         response.redirect('/')
         return
     }
 
-    const postDataResult = postData(`${apiUrl}edit_name`, request.body)
+    const postDataResult = postData(`${apiUrl}edit_phone`, request.body)
     postDataResult.then(_ => {
-        response.redirect('/account')
-    }).catch(err => {
-        console.error(err)
-        response.redirect('/')
-    })
-})
-
-app.post('/account/edit/surname', (request, response) => {
-    if (!request.session || !request.session.user) {
-        response.redirect('/')
-        return
-    }
-
-    const postDataResult = postData(`${apiUrl}edit_surname`, request.body)
-    postDataResult.then(_ => {
-        response.redirect('/account')
-    }).catch(err => {
-        console.error(err)
-        response.redirect('/')
-    })
-})
-
-app.post('/account/edit/age', (request, response) => {
-    if (!request.session || !request.session.user) {
-        response.redirect('/')
-        return
-    }
-
-    const postDataResult = postData(`${apiUrl}edit_age`, request.body)
-    postDataResult.then(_ => {
-        response.redirect('/account')
-    }).catch(err => {
-        console.error(err)
-        response.redirect('/')
-    })
-})
-
-app.post('/account/edit/phoneNumber', (request, response) => {
-    if (!request.session || !request.session.user) {
-        response.redirect('/')
-        return
-    }
-
-    const postDataResult = postData(`${apiUrl}edit_phoneNumber`, request.body)
-    postDataResult.then(_ => {
+        const {phone_number} = request.body
+        request.session.user.phoneNumber = phone_number
+        response.session = request.session
         response.redirect('/account')
     }).catch(err => {
         console.error(err)
@@ -411,6 +375,9 @@ app.post('/account/edit/address', (request, response) => {
 
     const postDataResult = postData(`${apiUrl}edit_address`, request.body)
     postDataResult.then(_ => {
+        const {address} = request.body
+        request.session.user.address = address
+        response.session = request.session
         response.redirect('/account')
     }).catch(err => {
         console.error(err)
@@ -577,7 +544,23 @@ app.post('/api/add_offer', (request, response) => {
 })
 
 app.post('/api/edit_username', (request, response) => {
-    api.editUsername(request, response)
+    api.updateUsername(request, response)
+})
+
+app.post('/api/edit_password', (request, response) => {
+    api.updatePassword(request, response)
+})
+
+app.post('/api/edit_address', (request, response) => {
+    api.updateAddress(request, response)
+})
+
+app.post('/api/edit_email', (request, response) => {
+    api.updateEmail(request, response)
+})
+
+app.post('/api/edit_phone', (request, response) => {
+    api.updatePhoneNumber(request, response)
 })
 
 app.delete('/api/delete_brand', (request, response) => {

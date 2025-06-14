@@ -393,16 +393,16 @@ export default class API {
     }
 
     updateUsername(request, response) {
-        const {userId, newUsername} = request.body
+        const {user_id, username} = request.body
 
-        if (!userId || !newUsername) {
+        if (!user_id || !username) {
             console.error('User ID and new username are required for username update')
             response.json({success: false})
             return
         }
 
         this.databaseConnector.database.run(
-            'update user set username = ? where id = ?', [newUsername, parseInt(userId)], (err) => {
+            'update user set username = ? where id = ?', [username, parseInt(user_id)], (err) => {
                 if (err) {
                     console.error('Error updating username:', err)
                     response.json({success: false})
@@ -414,15 +414,15 @@ export default class API {
     }
 
     updatePassword(request, response) {
-        const {userId, currentPassword, newPassword} = request.body
+        const {user_id, password} = request.body
 
-        if (!userId || !currentPassword || !newPassword) {
+        if (!user_id || !password) {
             console.error('User ID, current password, and new password are required for password update')
             response.json({success: false})
             return
         }
 
-        this.databaseConnector.database.get('select * from user where id = ?', [parseInt(userId)], (err, user) => {
+        this.databaseConnector.database.get('select * from user where id = ?', [parseInt(user_id)], (err, user) => {
             if(err){
                 console.error('Error fetching user:', err)
                 response.json({success: false})
@@ -434,17 +434,10 @@ export default class API {
                 return
             }
 
-            const match = bcrypt.compare(currentPassword, user.password)
-            if (!match) {
-                console.error('Current password does not match')
-                response.json({success: false})
-                return
-            }
-
-            const newHashedPassword = bcrypt.hash(newPassword, 5);
+            const newHashedPassword = bcrypt.hashSync(password, 5);
 
             this.databaseConnector.database.run(
-                'update user set password = ? where id = ?', [newHashedPassword, parseInt(userId)], (err) => {
+                'update user set password = ? where id = ?', [newHashedPassword, parseInt(user_id)], (err) => {
                     if (err) {
                         console.error('Error updating password:', err)
                         response.json({success: false})
@@ -456,59 +449,17 @@ export default class API {
         })
     }
 
-    updateName(request, response) {
-        const {userId, newName} = request.body
-
-        if (!userId || !newName) {
-            console.error('User ID and new name are required for name update')
-            response.json({success: false})
-            return
-        }
-
-        this.databaseConnector.database.run(
-            'update user set name = ? where id = ?', [newName, parseInt(userId)], (err) => {
-                if (err) {
-                    console.error('Error updating name:', err)
-                    response.json({success: false})
-                    return
-                }
-                response.json({success: true})
-            }
-        )
-    }
-
-    updateSurname(request, response) {
-        const {userId, newSurname} = request.body
-
-        if (!userId || !newSurname) {
-            console.error('User ID and new surname are required for surname update')
-            response.json({success: false})
-            return
-        }
-
-        this.databaseConnector.database.run(
-            'update user set surname = ? where id = ?', [newSurname, parseInt(userId)], (err) => {
-                if (err) {
-                    console.error('Error updating surname:', err)
-                    response.json({success: false})
-                    return
-                }
-                response.json({success: true})
-            }
-        )
-    }
-
     updatePhoneNumber(request, response) {
-        const {userId, newPhoneNumber} = request.body
+        const {user_id, phone_number} = request.body
 
-        if (!userId || !newPhoneNumber) {
+        if (!user_id || !phone_number) {
             console.error('User ID and new phone number are required for phone number update')
             response.json({success: false})
             return
         }
 
         this.databaseConnector.database.run(
-            'update user set phoneNumber = ? where id = ?', [newPhoneNumber, parseInt(userId)], (err) => {
+            'update user set phoneNumber = ? where id = ?', [phone_number, parseInt(user_id)], (err) => {
                 if (err) {
                     console.error('Error updating phone number:', err)
                     response.json({success: false})
@@ -520,16 +471,16 @@ export default class API {
     }
 
     updateEmail(request, response) {
-        const {userId, newEmailAddress} = request.body
+        const {user_id, email} = request.body
 
-        if (!userId || !newEmailAddress) {
+        if (!user_id || !email) {
             console.error('User ID and new email are required for email update')
             response.json({success: false})
             return
         }
 
         this.databaseConnector.database.run(
-            'update user set email = ? where id = ?', [newEmailAddress, parseInt(userId)], (err) => {
+            'update user set email = ? where id = ?', [email, parseInt(user_id)], (err) => {
                 if (err) {
                     console.error('Error updating email:', err)
                     response.json({success: false})
@@ -541,16 +492,16 @@ export default class API {
     }
 
     updateAddress(request, response) {
-        const {userId, newAddress} = request.body
+        const {user_id, address} = request.body
 
-        if (!userId || !newAddress) {
+        if (!user_id || !address) {
             console.error('User ID and new address are required for address update')
             response.json({success: false})
             return
         }
 
         this.databaseConnector.database.run(
-            'update user set address = ? where id = ?', [newAddress, parseInt(userId)], (err) => {
+            'update user set address = ? where id = ?', [address, parseInt(user_id)], (err) => {
                 if (err) {
                     console.error('Error updating address:', err)
                     response.json({success: false})
@@ -562,16 +513,16 @@ export default class API {
     }
 
     updatePermissionLevel(request, response) {
-        const {userId, newPermissionLevel} = request.body
+        const {user_id, newPermissionLevel} = request.body
 
-        if (!userId || !newPermissionLevel) {
+        if (!user_id || !newPermissionLevel) {
             console.error('User ID and new permission level are required for permission level update')
             response.json({success: false})
             return
         }
 
         this.databaseConnector.database.run(
-            'update user set permissionLevel = ? where id = ?', [parseInt(newPermissionLevel), parseInt(userId)], (err) => {
+            'update user set permissionLevel = ? where id = ?', [parseInt(newPermissionLevel), parseInt(user_id)], (err) => {
                 if (err) {
                     console.error('Error updating permission level:', err)
                     response.json({success: false})
@@ -605,9 +556,9 @@ export default class API {
     }
 
     addFavoriteCar(request, response) {
-        const {userId, modelId} = request.body
+        const {user_id, modelId} = request.body
 
-        if (!userId || !modelId) {
+        if (!user_id || !modelId) {
             console.error('User ID and model ID are required for adding favorite car')
             response.json({success: false})
             return
@@ -615,7 +566,7 @@ export default class API {
 
         this.databaseConnector.database.run(
             'insert into favoriteCar (userId, modelId) values (?, ?)',
-            [parseInt(userId), parseInt(modelId)],
+            [parseInt(user_id), parseInt(modelId)],
             (err) => {
                 if (err) {
                     console.error('Error adding favorite car:', err)
@@ -628,9 +579,9 @@ export default class API {
     }
 
     deleteFavoriteCar(request, response) {
-        const {userId, modelId} = request.body
+        const {user_id, modelId} = request.body
 
-        if (!userId || !modelId) {
+        if (!user_id || !modelId) {
             console.error('User ID and model ID are required for deleting favorite car')
             response.json({success: false})
             return
@@ -638,7 +589,7 @@ export default class API {
 
         this.databaseConnector.database.run(
             'delete from favoriteCar where userId = ? and modelId = ?',
-            [parseInt(userId), parseInt(modelId)],
+            [parseInt(user_id), parseInt(modelId)],
             (err) => {
                 if (err) {
                     console.error('Error deleting favorite car:', err)
