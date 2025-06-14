@@ -279,6 +279,19 @@ app.get('/adminpanel/users', (request, response) => {
     })
 })
 
+app.get('/account', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    response.render('index', {
+        language: 'pl',
+        page: 'account',
+        session: request.session
+    })
+})
+
 app.post('/adminpanel/wiki/brands/add', (request, response) => {
     if (!request.session || !request.session.user || request.session.user.permissionLevel !== 0) {
         response.redirect('/')
