@@ -43,7 +43,8 @@ export default class DatabaseConnector {
             (
                 id      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 name    varchar(28)                       NOT NULL UNIQUE,
-                country varchar(20)                       NOT NULL
+                country varchar(20)                       NOT NULL,
+                description text                          
             );
 
             create table model
@@ -51,6 +52,7 @@ export default class DatabaseConnector {
                 id      INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 name    varchar(20)                       NOT NULL UNIQUE,
                 brandId int                               NOT NULL,
+                description text,
                 FOREIGN KEY (brandId) REFERENCES brand (id)
             );
 
