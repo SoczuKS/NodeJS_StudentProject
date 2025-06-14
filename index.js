@@ -50,20 +50,6 @@ async function postData(url, data) {
     return response.json()
 }
 
-async function deleteData(url, data) {
-    const response = await fetch(url, {
-        method: 'DELETE',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    })
-    if (!response.ok) {
-        throw new Error(`Network response was not ok [${response.status}] ${response.statusText}`)
-    }
-    return response.json()
-}
-
 app.get('/', async (request, response) => {
     try {
         response.render('index', {language: 'pl', page: 'main', session: request.session})

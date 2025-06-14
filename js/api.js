@@ -43,14 +43,14 @@ export default class API {
     }
 
     addBrand(request, response) {
-        const {brand_name, brand_country} = request.body
+        const {brand_name, brand_country, brand_description} = request.body
 
         if (!brand_name || !brand_country) {
             response.json({success: false})
             return
         }
 
-        this.databaseConnector.database.run('insert into brand (name, country) values (?, ?)', [brand_name, brand_country], (err) => {
+        this.databaseConnector.database.run('insert into brand (name, country, brand_description) values (?, ?, ?)', [brand_name, brand_country, brand_description], (err) => {
             if (err) {
                 console.error('Error adding brand:', err)
                 response.json({success: false})
@@ -119,14 +119,14 @@ export default class API {
     }
 
     addModel(request, response) {
-        const {model_name, brand_id} = request.body
+        const {model_name, brand_id, model_description} = request.body
 
         if (!model_name || !brand_id) {
             response.status(400).send('Model name and brand ID are required')
             return
         }
 
-        this.databaseConnector.database.run('insert into model (name, brandId) values (?, ?)', [model_name, parseInt(brand_id)], (err) => {
+        this.databaseConnector.database.run('insert into model (name, brandId, modelDescription) values (?, ?, ?)', [model_name, parseInt(brand_id), model_description], (err) => {
             if (err) {
                 console.error('Error adding model:', err)
                 response.json({success: false})

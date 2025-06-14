@@ -2,6 +2,10 @@
     <div class="wiki_view_info">
         <h2><%= brand.name %></h2>
         <div id="brand_info">
+            <div class="brand_description">
+                <strong>Opis:</strong>
+                <p><%= brand.description %></p>
+            </div>
         </div>
         <% if (models && models.length > 0) { %>
             <ul id="models_list">
@@ -25,6 +29,11 @@
                     <label for="model_name">Nazwa</label>
                     <input id="model_name" name="model_name" type="text" placeholder="Multipla, Testarossa, Focus..."
                            required>
+                </div>
+                <div>
+                    <label for="model_description">Opis</label>
+                    <textarea id="model_description" name="model_description"
+                              placeholder="Opis modelu, jego historia, ciekawostki..."></textarea>
                 </div>
                 <input type="hidden" name="brand_id" value="<%= brand.id %>">
                 <input type="hidden" name="token" value="token">
