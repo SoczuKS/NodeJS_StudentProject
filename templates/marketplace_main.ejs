@@ -1,0 +1,14 @@
+<% if (session.user) { %>
+    <div id="add_offer_button_div">
+        <a href="/marketplace/add_offer">Dodaj ogłoszenie</a>
+    </div>
+<% } %>
+<div id="offers_view">
+    <% if (offers && offers.length > 0) { %>
+        <ul>
+            <% for (const offer of offers) { %>
+                <li><a href="/marketplace/offer/<%= offer.id %>"><%= offer.title %></a></li>
+            <% } %>
+        </ul>
+    <% } %>
+</div>

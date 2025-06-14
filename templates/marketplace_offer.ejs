@@ -1,0 +1,11 @@
+<h3><%= offer.title %></h3>
+<p>Opis: <%= offer.description %></p>
+<p>Marka: <%= offer.brandName %></p>
+<p>Model: <%= offer.modelName %></p>
+<p>Wersja: <%= offer.productionStart %> - <%= offer.productionEnd || 'obecnie' %>, <%= offer.bodyType %>, <%= offer.engineCapacity %> L, <%= offer.power %> KM, <%= offer.fuelType %></p>
+<p>Przebieg: <%= offer.mileage %> km</p>
+<p>Cena: <%= offer.price %> zł</p>
+<% if (session.user) { %>
+    <p>Sprzedający: <%= offer.username %></p>
+    <p>Numer telefonu: <%= offer.phoneNumber %></p>
+<% } %>

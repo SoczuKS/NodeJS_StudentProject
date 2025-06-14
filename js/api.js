@@ -50,7 +50,7 @@ export default class API {
             return
         }
 
-        this.databaseConnector.database.run('insert into brand (name, country, brand_description) values (?, ?, ?)', [brand_name, brand_country, brand_description], (err) => {
+        this.databaseConnector.database.run('insert into brand (name, country, description) values (?, ?, ?)', [brand_name, brand_country, brand_description], (err) => {
             if (err) {
                 console.error('Error adding brand:', err)
                 response.json({success: false})
@@ -126,7 +126,7 @@ export default class API {
             return
         }
 
-        this.databaseConnector.database.run('insert into model (name, brandId, modelDescription) values (?, ?, ?)', [model_name, parseInt(brand_id), model_description], (err) => {
+        this.databaseConnector.database.run('insert into model (name, brandId, description) values (?, ?, ?)', [model_name, parseInt(brand_id), model_description], (err) => {
             if (err) {
                 console.error('Error adding model:', err)
                 response.json({success: false})
@@ -267,6 +267,7 @@ export default class API {
                 response.json({
                     success: true,
                     user: {
+                        id: user.id,
                         username: user.username,
                         permissionLevel: user.permissionLevel
                     },
@@ -330,6 +331,101 @@ export default class API {
         this.databaseConnector.database.run('delete from user where id = ?', [parseInt(id)], (err) => {
             if (err) {
                 console.error('Error deleting user:', err)
+                response.json({success: false})
+                return
+            }
+
+            response.json({success: true})
+        })
+    }
+
+    getOffers(request, response) {
+        this.databaseConnector.database.all('select offer.id as id, offer.title as title, offer.description as description, offer.mileage as mileage, offer.price as price, ' +
+            'modelVersion.productionStart as productionStart, modelVersion.productionEnd as productionEnd, modelVersion.engineCapacity as engineCapacity, modelVersion.power as power, ' +
+            'model.name as modelName, ' +
+            'brand.name as brandName, ' +
+            'user.username as username, user.phoneNumber as phoneNumber, ' +
+            'fuelType.name as fuelType, ' +
+            'bodyType.name as bodyType ' +
+            'from offer ' +
+            'join modelVersion on offer.modelVersionId = modelVersion.id ' +
+            'join model on modelVersion.modelId = model.id ' +
+            'join brand on model.brandId = brand.id ' +
+            'join bodyType on modelVersion.bodyTypeId = bodyType.id ' +
+            'join fuelType on modelVersion.fuelTypeId = fuelType.id ' +
+            'join user on offer.userId = user.id', [], (err, rows) => {
+            if (err) {
+                console.error('Error fetching offers:', err)
+                response.json({success: false})
+                return
+            }
+
+            response.json(rows)
+        })
+    }
+
+    getOffer(request, response) {
+        const {offerId} = request.params
+        this.databaseConnector.database.get('select offer.title as title, offer.description as description, offer.mileage as mileage, offer.price as price, ' +
+            'modelVersion.productionStart as productionStart, modelVersion.productionEnd as productionEnd, modelVersion.engineCapacity as engineCapacity, modelVersion.power as power, ' +
+            'model.name as modelName, ' +
+            'brand.name as brandName, ' +
+            'user.username as username, user.phoneNumber as phoneNumber, ' +
+            'fuelType.name as fuelType, ' +
+            'bodyType.name as bodyType ' +
+            'from offer ' +
+            'join modelVersion on offer.modelVersionId = modelVersion.id ' +
+            'join model on modelVersion.modelId = model.id ' +
+            'join brand on model.brandId = brand.id ' +
+            'join bodyType on modelVersion.bodyTypeId = bodyType.id ' +
+            'join fuelType on modelVersion.fuelTypeId = fuelType.id ' +
+            'join user on offer.userId = user.id ' +
+            'where offer.id = ?', [parseInt(offerId)], (err, row) => {
+            if (err) {
+                console.error('Error fetching offers:', err)
+                response.json({success: false})
+                return
+            }
+            console.log(row)
+            response.json(row)
+        })
+    }
+
+    addOffer(request, response) {
+        const {title, model_version_id, description, mileage, price, user_id} = request.body
+
+        if (!model_version_id || !price || !user_id || !title || !mileage || !description) {
+            console.error('Model version ID, price and user ID are required for adding an offer')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'insert into offer (title, modelVersionId, userId, description, mileage, price) values (?, ?, ?, ?, ?, ?)',
+            [title, parseInt(model_version_id), parseInt(user_id), description, mileage, price],
+            (err) => {
+                if (err) {
+                    console.error('Error adding offer:', err)
+                    response.json({success: false})
+                    return
+                }
+
+                response.json({success: true})
+            })
+    }
+
+    deleteOffer(request, response) {
+        const {id} = request.body
+
+        if (!id) {
+            console.error('Offer ID is required for deletion')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run('delete from offer where id = ?', [parseInt(id)], (err) => {
+            if (err) {
+                console.error('Error deleting offer:', err)
                 response.json({success: false})
                 return
             }

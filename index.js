@@ -194,7 +194,60 @@ app.get('/signout', (request, response) => {
 })
 
 app.get('/marketplace', (request, response) => {
-    response.render('index', {language: 'pl', page: 'marketplace', session: request.session})
+    fetchData(`${apiUrl}offers`).then((offers) => {
+        response.render('index', {
+            language: 'pl',
+            page: 'marketplace',
+            subpage: 'marketplace_main',
+            offers: offers,
+            session: request.session
+        })
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.get('/marketplace/add_offer', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    fetchData(`${apiUrl}offers`).then((offers) => {
+        fetchData(`${apiUrl}brands`).then((brands) => {
+            response.render('index', {
+                language: 'pl',
+                page: 'marketplace',
+                subpage: 'marketplace_add_offer',
+                offers: offers,
+                brands: brands,
+                session: request.session
+            })
+        }).catch(err => {
+            console.error(err)
+            response.redirect('/')
+        })
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
+app.get('/marketplace/offer/:offerId', (request, response) => {
+    const {offerId} = request.params
+    fetchData(`${apiUrl}offer/${offerId}`).then((offer) => {
+        response.render('index', {
+            language: 'pl',
+            page: 'marketplace',
+            subpage: 'marketplace_offer',
+            offer: offer,
+            session: request.session
+        })
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
 })
 
 app.get('/adminpanel', (request, response) => {
@@ -297,6 +350,21 @@ app.post('/signin', (request, response) => {
     })
 })
 
+app.post('/marketplace/add_offer', (request, response) => {
+    if (!request.session || !request.session.user) {
+        response.redirect('/')
+        return
+    }
+
+    const postDataResult = postData('http://localhost:3000/api/add_offer', request.body)
+    postDataResult.then(_ => {
+        response.redirect('/marketplace')
+    }).catch(err => {
+        console.error(err)
+        response.redirect('/')
+    })
+})
+
 app.get('/api', (request, response) => {
     api.welcome(request, response)
 })
@@ -333,6 +401,14 @@ app.get('/api/users', (request, response) => {
     api.getUsers(request, response)
 })
 
+app.get('/api/offers', (request, response) => {
+    api.getOffers(request, response)
+})
+
+app.get('/api/offer/:offerId', (request, response) => {
+    api.getOffer(request, response)
+})
+
 app.post('/api/signin', (request, response) => {
     api.signIn(request, response)
 })
@@ -353,6 +429,10 @@ app.post('/api/add_model_version', (request, response) => {
     api.addModelVersion(request, response)
 })
 
+app.post('/api/add_offer', (request, response) => {
+    api.addOffer(request, response)
+})
+
 app.delete('/api/delete_brand', (request, response) => {
     api.deleteBrand(request, response)
 })
@@ -367,6 +447,10 @@ app.delete('/api/delete_model_version', (request, response) => {
 
 app.delete('/api/delete_user', (request, response) => {
     api.deleteUser(request, response)
+})
+
+app.delete('/api/delete_offer', (request, response) => {
+    api.deleteOffer(request, response)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

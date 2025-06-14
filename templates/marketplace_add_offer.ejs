@@ -1,0 +1,44 @@
+<h4>Nowe ogłoszenie</h4>
+<form id="add_offer_form" action="/marketplace/add_offer" method="post">
+    <div>
+        <label for="title">Tytuł ogłoszenia</label>
+        <input id="title" name="title" type="text" placeholder="Sprzedam Opla..." required>
+    </div>
+    <div>
+        <label for="brand_selector">Marka</label>
+        <select id="brand_selector">
+            <option value="" disabled selected>Wybierz markę</option>
+            <% for (const brand of brands) { %>
+                <option value="<%= brand.id %>"><%= brand.name %></option>
+            <% } %>
+        </select>
+    </div>
+    <div>
+        <label for="model_selector">Model</label>
+        <select id="model_selector">
+            <option value="" disabled selected>Wybierz model</option>
+        </select>
+    </div>
+    <div>
+        <label for="model_version_id">Wersja</label>
+        <select id="model_version_id" name="model_version_id">
+            <option value="" disabled selected>Wybierz wersję modelu</option>
+        </select>
+    </div>
+    <div>
+        <label for="description">Opis ogłoszenia</label>
+        <textarea id="description" name="description"
+                  placeholder="Opis stanu technicznego, przebiegu, historii pojazdu..."></textarea>
+    </div>
+    <div>
+        <label for="mileage">Przebieg</label>
+        <input id="mileage" name="mileage" type="number" min="0" step="0" required>
+    </div>
+    <div>
+        <label for="price">Cena (zł)</label>
+        <input id="price" name="price" type="number" min="0" step="0.01" required>
+    </div>
+    <input type="hidden" name="user_id" value="<%= session.user.id %>">
+    <input type="hidden" name="token" value="token">
+    <button type="submit">Dodaj ogłoszenie</button>
+</form>

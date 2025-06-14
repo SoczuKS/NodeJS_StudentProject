@@ -21,10 +21,6 @@
     color: black;
 }
 
-h2 {
-    text-align: center;
-}
-
 #wiki_view {
     display: flex;
     flex-direction: row;

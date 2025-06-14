@@ -2,13 +2,6 @@ const deleteBrandUrl = '/api/delete_brand'
 const deleteModeUrl = '/api/delete_model'
 const deleteModelVersionUrl = '/api/delete_model_version'
 
-function onLoad() {
-    setDeleteBrandButtons()
-    setDeleteModelButtons()
-    setDeleteModelVersionButtons()
-    setDeleteUserButtons()
-}
-
 function setDeleteBrandButtons() {
     const deleteBrandButtons = document.querySelectorAll('.delete_brand_button')
     deleteBrandButtons.forEach(button => {
