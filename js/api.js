@@ -62,7 +62,7 @@ export default class API {
     }
 
     deleteBrand(request, response) {
-        const {id} = request.params
+        const {id} = request.body
 
         if (!id) {
             console.error('Brand ID is required for deletion')
@@ -138,7 +138,7 @@ export default class API {
     }
 
     deleteModel(request, response) {
-        const {id} = request.params
+        const {id} = request.body
 
         if (!id) {
             console.error('Model ID is required for deletion')
@@ -197,6 +197,26 @@ export default class API {
 
                 response.json({success: true})
             })
+    }
+
+    deleteModelVersion(request, response) {
+        const {id} = request.body
+
+        if (!id) {
+            console.error('Model version ID is required for deletion')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run('delete from modelVersion where id = ?', [parseInt(id)], (err) => {
+            if (err) {
+                console.error('Error deleting model version:', err)
+                response.json({success: false})
+                return
+            }
+
+            response.json({success: true})
+        })
     }
 
     getFuelTypes(request, response) {

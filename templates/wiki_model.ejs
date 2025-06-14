@@ -24,7 +24,7 @@
                     <td><%= version.fuelType %></td>
                     <td>
                         <% if (session.user && session.user.permissionLevel === 0) { %>
-                            <a href="/adminpanel/wiki/model_versions/delete/<%= version.id %>" class="delete_button">X</a>
+                            <button class="delete_button delete_model_version_button" data-model-version-id="<%= version.modelVersionId %>">Usuń</button>
                         <% } %>
                     </td>
                 </tr>

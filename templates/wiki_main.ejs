@@ -5,7 +5,7 @@
                 <li>
                     <a href="/wiki/brand/<%= brand.id %>"><%= brand.name %></a>
                     <% if (session.user && session.user.permissionLevel === 0) { %>
-                        <a href="/adminpanel/wiki/brands/delete/<%= brand.id %>" class="delete_button">X</a>
+                        <button class="delete_button delete_brand_button" data-brand-id="<%= brand.id %>">Usuń</button>
                     <% } %>
                 </li>
             <% } %>

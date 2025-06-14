@@ -50,6 +50,20 @@ async function postData(url, data) {
     return response.json()
 }
 
+async function deleteData(url, data) {
+    const response = await fetch(url, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    if (!response.ok) {
+        throw new Error(`Network response was not ok [${response.status}] ${response.statusText}`)
+    }
+    return response.json()
+}
+
 app.get('/', async (request, response) => {
     try {
         response.render('index', {language: 'pl', page: 'main', session: request.session})
@@ -212,7 +226,12 @@ app.get('/adminpanel/users', (request, response) => {
         return
     }
 
-    response.render('index', {language: 'pl', page: 'adminpanel', subpage: 'adminpanel_users', session: request.session})
+    response.render('index', {
+        language: 'pl',
+        page: 'adminpanel',
+        subpage: 'adminpanel_users',
+        session: request.session
+    })
 })
 
 app.post('/adminpanel/wiki/brands/add', (request, response) => {
@@ -321,6 +340,18 @@ app.post('/api/add_model', (request, response) => {
 
 app.post('/api/add_model_version', (request, response) => {
     api.addModelVersion(request, response)
+})
+
+app.delete('/api/delete_brand', (request, response) => {
+    api.deleteBrand(request, response)
+})
+
+app.delete('/api/delete_model', (request, response) => {
+    api.deleteModel(request, response)
+})
+
+app.delete('/api/delete_model_version', (request, response) => {
+    api.deleteModelVersion(request, response)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}`))

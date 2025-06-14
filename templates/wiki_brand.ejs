@@ -8,7 +8,7 @@
                 <li>
                     <a href="/wiki/model/<%= model.id %>"><%= model.name %></a>
                     <% if (session.user && session.user.permissionLevel === 0) { %>
-                        <a href="/adminpanel/wiki/models/delete/<%= model.id %>" class="delete_button">X</a>
+                        <button class="delete_button delete_model_button" data-model-id="<%= model.id %>">Usuń</button>
                     <% } %>
                 </li>
             <% } %>
