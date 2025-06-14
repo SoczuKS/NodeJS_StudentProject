@@ -53,7 +53,7 @@ export default class DatabaseConnector {
                 name    varchar(20)                       NOT NULL UNIQUE,
                 brandId int                               NOT NULL,
                 description text,
-                FOREIGN KEY (brandId) REFERENCES brand (id)
+                FOREIGN KEY (brandId) REFERENCES brand (id) on delete restrict on update cascade
             );
 
             create table fuelType
@@ -78,9 +78,9 @@ export default class DatabaseConnector {
                 engineCapacity  real,
                 power           int                               NOT NULL,
                 fuelTypeId      int                               NOT NULL,
-                FOREIGN KEY (modelId) REFERENCES model (id),
-                FOREIGN KEY (bodyTypeId) REFERENCES bodyType (id),
-                FOREIGN KEY (fuelTypeId) REFERENCES fuelType (id)
+                FOREIGN KEY (modelId) REFERENCES model (id) on delete restrict on update cascade,
+                FOREIGN KEY (bodyTypeId) REFERENCES bodyType (id) on delete restrict on update cascade,
+                FOREIGN KEY (fuelTypeId) REFERENCES fuelType (id) on delete restrict on update cascade
             );
 
             create table user
@@ -106,14 +106,23 @@ export default class DatabaseConnector {
                 description    varchar(200),
                 mileage        int                               NOT NULL,
                 price          real                              NOT NULL,
-                FOREIGN KEY (modelVersionId) REFERENCES modelVersion (id),
-                FOREIGN KEY (userId) REFERENCES user (id)
+                FOREIGN KEY (modelVersionId) REFERENCES modelVersion (id) on delete restrict on update cascade,
+                FOREIGN KEY (userId) REFERENCES user (id) on delete restrict on update cascade
             );
 
             create table wiki
             (
                 id          INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 description TEXT
+            );
+
+            create table favoriteCar
+            (
+                userId      int                               NOT NULL,
+                modelId     int                               NOT NULL,
+                FOREIGN KEY (userId) REFERENCES user (id) on delete restrict on update cascade,
+                FOREIGN KEY (modelId) REFERENCES model (id) on delete restrict on update cascade,
+                unique (userId, modelId)
             );
 
             insert into brand (name, country)

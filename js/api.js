@@ -61,6 +61,28 @@ export default class API {
         })
     }
 
+    updateBrand(request, response) {
+        const {brand_id, brand_name, brand_country, brand_description} = request.body
+
+        if (!brand_id || !brand_name || !brand_country) {
+            console.error('Brand ID, name, and country are required for update')
+            response.json({success: false})
+            return
+        }
+        this.databaseConnector.database.run(
+            'update brand set name = ?, country = ?, brand_description = ? where id = ?',
+            [brand_name, brand_country, brand_description, parseInt(brand_id)],
+            (err) => {
+                if (err) {
+                    console.error('Error updating brand:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
     deleteBrand(request, response) {
         const {id} = request.body
 
@@ -137,6 +159,29 @@ export default class API {
         })
     }
 
+    updateModel(request, response) {
+        const {model_id, model_name, brand_id, model_description} = request.body
+
+        if (!model_id || !model_name || !brand_id) {
+            console.error('Model ID, name, and brand ID are required for update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update model set name = ?, brandId = ?, modelDescription = ? where id = ?',
+            [model_name, parseInt(brand_id), model_description, parseInt(model_id)],
+            (err) => {
+                if (err) {
+                    console.error('Error updating model:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
     deleteModel(request, response) {
         const {id} = request.body
 
@@ -197,6 +242,28 @@ export default class API {
 
                 response.json({success: true})
             })
+    }
+
+    updateModelVersion(request, response) {
+        const {id, model_id, body_type, production_start, production_end, engine_capacity, power, fuel_type} = request.body
+        if (!id || !model_id || !body_type || !production_start || !production_end || !engine_capacity || !power || !fuel_type) {
+            console.error('All fields are required for model version update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update modelVersion set modelId = ?, bodyTypeId = ?, productionStart = ?, productionEnd = ?, engineCapacity = ?, power = ?, fuelTypeId = ? where id = ?',
+            [parseInt(model_id), parseInt(body_type), production_start, production_end, engine_capacity, parseInt(power), parseInt(fuel_type), parseInt(id)],
+            (err) => {
+                if (err) {
+                    console.error('Error updating model version:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
     }
 
     deleteModelVersion(request, response) {
@@ -317,6 +384,159 @@ export default class API {
 
             response.json(rows)
         })
+    }
+
+    updateUsername(request, response) {
+        const {userId, newUsername} = request.body
+
+        if (!userId || !newUsername) {
+            console.error('User ID and new username are required for username update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update user set username = ? where id = ?', [newUsername, parseInt(userId)], (err) => {
+                if (err) {
+                    console.error('Error updating username:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
+    updatePassword(request, response) {
+        const {userId, currentPassword, newPassword} = request.body
+
+        if (!userId || !currentPassword || !newPassword) {
+            console.error('User ID, current password, and new password are required for password update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.get('select * from user where id = ?', [parseInt(userId)], (err, user) => {
+            if(err){
+                console.error('Error fetching user:', err)
+                response.json({success: false})
+                return
+            }
+            if(!user) {
+                console.error('User not found')
+                response.json({success: false})
+                return
+            }
+
+            const match = bcrypt.compare(currentPassword, user.password)
+            if (!match) {
+                console.error('Current password does not match')
+                response.json({success: false})
+                return
+            }
+
+            const newHashedPassword = bcrypt.hash(newPassword, 5);
+
+            this.databaseConnector.database.run(
+                'update user set password = ? where id = ?', [newHashedPassword, parseInt(userId)], (err) => {
+                    if (err) {
+                        console.error('Error updating password:', err)
+                        response.json({success: false})
+                        return
+                    }
+                    response.json({success: true})
+                }
+            )
+        })
+    }
+
+    updatePermissionLevel(request, response) {
+        const {userId, newPermissionLevel} = request.body
+
+        if (!userId || !newPermissionLevel) {
+            console.error('User ID and new permission level are required for permission level update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update user set permissionLevel = ? where id = ?', [parseInt(newPermissionLevel), parseInt(userId)], (err) => {
+                if (err) {
+                    console.error('Error updating permission level:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
+    getFavoriteCars(request, response) {
+        const {userId} = request.params
+        if (!userId) {
+            console.error('User ID is required to fetch favorite cars')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.all(
+            'select fc.id as favoriteCarId, m.id as modelId, m.name as modelName, b.name as brandName from favoriteCar as fc join model as m on fc.modelId = m.id join brand as b on m.brandId = b.id where fc.userId = ?',
+            [parseInt(userId)],
+            (err, rows) => {
+                if (err) {
+                    console.error('Error fetching favorite cars:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json(rows)
+            }
+        )
+    }
+
+    addFavoriteCar(request, response) {
+        const {userId, modelId} = request.body
+
+        if (!userId || !modelId) {
+            console.error('User ID and model ID are required for adding favorite car')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'insert into favoriteCar (userId, modelId) values (?, ?)',
+            [parseInt(userId), parseInt(modelId)],
+            (err) => {
+                if (err) {
+                    console.error('Error adding favorite car:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
+    deleteFavoriteCar(request, response) {
+        const {userId, modelId} = request.body
+
+        if (!userId || !modelId) {
+            console.error('User ID and model ID are required for deleting favorite car')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'delete from favoriteCar where userId = ? and modelId = ?',
+            [parseInt(userId), parseInt(modelId)],
+            (err) => {
+                if (err) {
+                    console.error('Error deleting favorite car:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
     }
 
     deleteUser(request, response) {
