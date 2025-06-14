@@ -450,19 +450,61 @@ export default class API {
         })
     }
 
-    updateAddress(request, response) {
-        const {userId, newAddress} = request.body
+    updateName(request, response) {
+        const {userId, newName} = request.body
 
-        if (!userId || !newAddress) {
-            console.error('User ID and new address are required for address update')
+        if (!userId || !newName) {
+            console.error('User ID and new name are required for name update')
             response.json({success: false})
             return
         }
 
         this.databaseConnector.database.run(
-            'update user set address = ? where id = ?', [newAddress, parseInt(userId)], (err) => {
+            'update user set name = ? where id = ?', [newName, parseInt(userId)], (err) => {
                 if (err) {
-                    console.error('Error updating address:', err)
+                    console.error('Error updating name:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
+    updateSurname(request, response) {
+        const {userId, newSurname} = request.body
+
+        if (!userId || !newSurname) {
+            console.error('User ID and new surname are required for surname update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update user set surname = ? where id = ?', [newSurname, parseInt(userId)], (err) => {
+                if (err) {
+                    console.error('Error updating surname:', err)
+                    response.json({success: false})
+                    return
+                }
+                response.json({success: true})
+            }
+        )
+    }
+
+    updatePhoneNumber(request, response) {
+        const {userId, newPhoneNumber} = request.body
+
+        if (!userId || !newPhoneNumber) {
+            console.error('User ID and new phone number are required for phone number update')
+            response.json({success: false})
+            return
+        }
+
+        this.databaseConnector.database.run(
+            'update user set phoneNumber = ? where id = ?', [newPhoneNumber, parseInt(userId)], (err) => {
+                if (err) {
+                    console.error('Error updating phone number:', err)
                     response.json({success: false})
                     return
                 }
@@ -492,19 +534,19 @@ export default class API {
         )
     }
 
-    updatePhoneNumber(request, response) {
-        const {userId, newPhoneNumber} = request.body
+    updateAddress(request, response) {
+        const {userId, newAddress} = request.body
 
-        if (!userId || !newPhoneNumber) {
-            console.error('User ID and new phone number are required for phone number update')
+        if (!userId || !newAddress) {
+            console.error('User ID and new address are required for address update')
             response.json({success: false})
             return
         }
 
         this.databaseConnector.database.run(
-            'update user set phoneNumber = ? where id = ?', [newPhoneNumber, parseInt(userId)], (err) => {
+            'update user set address = ? where id = ?', [newAddress, parseInt(userId)], (err) => {
                 if (err) {
-                    console.error('Error updating phone number:', err)
+                    console.error('Error updating address:', err)
                     response.json({success: false})
                     return
                 }
